@@ -14,7 +14,7 @@ use J7\WpReactPlugin\Plugin;
  * Class CPT
  */
 final class CPT {
-	use \J7\WpUtils\Traits\SingletonTrait;
+	use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 	/**
 	 * Post metas

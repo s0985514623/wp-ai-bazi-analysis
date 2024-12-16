@@ -12,7 +12,7 @@ use J7\WpReactPlugin\Utils\Base;
  * Class Entry
  */
 final class Entry {
-	use \J7\WpUtils\Traits\SingletonTrait;
+	use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 	/**
 	 * Constructor

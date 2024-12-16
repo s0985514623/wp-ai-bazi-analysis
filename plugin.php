@@ -20,14 +20,15 @@ declare ( strict_types=1 );
 namespace J7\WpReactPlugin;
 
 if ( ! \class_exists( 'J7\WpReactPlugin\Plugin' ) ) {
+	require_once __DIR__ . '/vendor-prefixed/autoload.php';
 	require_once __DIR__ . '/vendor/autoload.php';
 
 	/**
 	 * Class Plugin
 	 */
 	final class Plugin {
-		use \J7\WpUtils\Traits\PluginTrait;
-		use \J7\WpUtils\Traits\SingletonTrait;
+		use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\PluginTrait;
+		use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 		/**
 		 * Constructor
@@ -58,6 +59,6 @@ if ( ! \class_exists( 'J7\WpReactPlugin\Plugin' ) ) {
 			);
 		}
 	}
-
-	Plugin::instance();
 }
+
+Plugin::instance();

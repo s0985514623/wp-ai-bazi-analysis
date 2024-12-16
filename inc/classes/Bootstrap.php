@@ -8,13 +8,13 @@ declare (strict_types = 1);
 namespace J7\WpReactPlugin;
 
 use J7\WpReactPlugin\Utils\Base;
-use Kucrut\Vite;
+use J7WpReactPlugin\vendor\Kucrut\Vite;
 
 /**
  * Class Bootstrap
  */
 final class Bootstrap {
-	use \J7\WpUtils\Traits\SingletonTrait;
+	use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 	/**
 	 * Constructor
