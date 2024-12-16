@@ -284,4 +284,3 @@ final class CPT {
 	}
 }
 
-CPT::instance();

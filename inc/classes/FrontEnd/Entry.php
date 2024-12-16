@@ -29,5 +29,3 @@ final class Entry {
 		echo '<div id="my_app"></div>';
 	}
 }
-
-Entry::instance();
