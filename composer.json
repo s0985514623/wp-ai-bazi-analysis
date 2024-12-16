@@ -17,6 +17,12 @@
       "url": "https://wpackagist.org"
     }
   ],
+	"autoload": {
+		"psr-4": {
+			"J7\\WpReactPlugin\\": "inc/classes/",
+			"J7WpReactPlugin\\vendor\\": "vendor-prefixed/"
+		}
+	},
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
@@ -24,14 +30,41 @@
   },
   "require": {
     "kucrut/vite-for-wp": "^0.8.0",
-    "j7-dev/wp-utils": "0.0.14"
+    "j7-dev/wp-utils": "0.2.57"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "@stable",
     "wp-coding-standards/wpcs": "@stable",
-    "dealerdirect/phpcodesniffer-composer-installer": "@stable"
+    "dealerdirect/phpcodesniffer-composer-installer": "@stable",
+		"brianhenryie/strauss": "^0.20.1"
   },
   "scripts": {
-    "lint": "phpcs"
-  }
+    "lint": "phpcs",
+		"prefix-namespaces": [
+			"strauss",
+			"@php composer dump-autoload"
+		],
+		"post-install-cmd": [
+			"@prefix-namespaces"
+		],
+		"post-update-cmd": [
+			"@prefix-namespaces"
+		]
+  },
+	"extra": {
+		"strauss": {
+			"target_directory": "vendor-prefixed",
+			"namespace_prefix": "J7WpReactPlugin\\vendor\\",
+			"classmap_prefix": "J7WpReactPlugin_vendor_",
+			"constant_prefix": "J7V_",
+			"classmap_output": true,
+			"update_call_sites": true,
+			"exclude_from_copy": {
+				"packages": [
+					"yahnis-elsts/plugin-update-checker",
+					"j7-dev/tgm-plugin-activation-forked"
+				]
+			}
+		}
+	}
 }
