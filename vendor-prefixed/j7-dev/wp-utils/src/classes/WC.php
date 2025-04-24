@@ -5,7 +5,7 @@
  * @package J7\WpUtils
  */
 
-namespace J7WpReactPlugin\vendor\J7\WpUtils\Classes;
+namespace R2WpBaziPlugin\vendor\J7\WpUtils\Classes;
 
 if (class_exists('WC')) {
 	return;
@@ -148,7 +148,7 @@ abstract class WC {
 
 			return $wpdb->get_col( str_replace( '\"', '"', $prepare ) ); // phpcs:ignore
 		} catch ( \Exception $e ) {
-			\J7WpReactPlugin\vendor\J7\WpUtils\Classes\ErrorLog::info( $e->getMessage() );
+			\R2WpBaziPlugin\vendor\J7\WpUtils\Classes\ErrorLog::info( $e->getMessage() );
 
 			return [];
 		}

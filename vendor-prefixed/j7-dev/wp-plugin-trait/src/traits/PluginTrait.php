@@ -5,7 +5,7 @@
  * @package J7\WpUtils
  */
 
-namespace J7WpReactPlugin\vendor\J7\WpUtils\Traits;
+namespace R2WpBaziPlugin\vendor\J7\WpUtils\Traits;
 
 if (trait_exists('PluginTrait')) {
 	return;

@@ -1,25 +1,25 @@
 <?php
 /**
- * Plugin Name:       WP React Plugin (DEV)
- * Plugin URI:        https://github.com/j7-dev/wp-react-plugin
- * Description:       WP React Plugin is a boilerplate for creating a WordPress plugin with React, Tailwind, TypeScript, React Query v4, SCSS and Vite.
- * Version:           4.0.1
+ * Plugin Name:       WP AI 八字命格分析 (DEV)
+ * Plugin URI:        https://github.com/s0985514623/wp-ai-bazi-analysis
+ * Description:       串接AI進行八字命格分析外掛
+ * Version:           1.0.0
  * Requires at least: 5.7
  * Requires PHP:      8.0
- * Author:            J7
- * Author URI:        https://github.com/j7-dev
+ * Author:            Ren
+ * Author URI:        https://github.com/s0985514623
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       wp_react_plugin
+ * Text Domain:       wp_ai_bazi_analysis
  * Domain Path:       /languages
  * Tags: vite, react, tailwind, typescript, react-query, scss, WordPress, WordPress plugin
  */
 
 declare ( strict_types=1 );
 
-namespace J7\WpReactPlugin;
+namespace R2\WpBaziPlugin;
 
-if ( ! \class_exists( 'J7\WpReactPlugin\Plugin' ) ) {
+if ( ! \class_exists( 'R2\WpBaziPlugin\Plugin' ) ) {
 	require_once __DIR__ . '/vendor-prefixed/autoload.php';
 	require_once __DIR__ . '/vendor/autoload.php';
 
@@ -27,8 +27,8 @@ if ( ! \class_exists( 'J7\WpReactPlugin\Plugin' ) ) {
 	 * Class Plugin
 	 */
 	final class Plugin {
-		use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\PluginTrait;
-		use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
+		use \R2WpBaziPlugin\vendor\J7\WpUtils\Traits\PluginTrait;
+		use \R2WpBaziPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 		/**
 		 * Constructor
@@ -52,8 +52,8 @@ if ( ! \class_exists( 'J7\WpReactPlugin\Plugin' ) ) {
 
 			$this->init(
 				[
-					'app_name'    => 'My App',
-					'github_repo' => 'https://github.com/j7-dev/wp-react-plugin',
+					'app_name'    => 'WP AI 八字命格分析',
+					'github_repo' => 'https://github.com/s0985514623/wp-ai-bazi-analysis',
 					'callback'    => [ Bootstrap::class, 'instance' ],
 				]
 			);

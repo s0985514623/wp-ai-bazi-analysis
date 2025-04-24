@@ -5,16 +5,16 @@
 
 declare (strict_types = 1);
 
-namespace J7\WpReactPlugin;
+namespace R2\WpBaziPlugin;
 
-use J7\WpReactPlugin\Utils\Base;
-use J7WpReactPlugin\vendor\Kucrut\Vite;
+use R2\WpBaziPlugin\Utils\Base;
+use R2WpBaziPlugin\vendor\Kucrut\Vite;
 
 /**
  * Class Bootstrap
  */
 final class Bootstrap {
-	use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
+	use \R2WpBaziPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 	/**
 	 * Constructor

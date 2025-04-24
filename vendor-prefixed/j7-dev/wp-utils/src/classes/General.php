@@ -5,7 +5,7 @@
  * @package J7\WpUtils
  */
 
-namespace J7WpReactPlugin\vendor\J7\WpUtils\Classes;
+namespace R2WpBaziPlugin\vendor\J7\WpUtils\Classes;
 
 if ( class_exists( 'General' ) ) {
 	return;
@@ -194,7 +194,7 @@ abstract class General {
 		$execution_time_diff = $to_result['execution_time'] - $from_result['execution_time'];
 		$percent             = abs( round( $execution_time_diff / $from_result['execution_time'], 2 ) ) * 100;
 
-		\J7WpReactPlugin\vendor\J7\WpUtils\Classes\ErrorLog::info(
+		\R2WpBaziPlugin\vendor\J7\WpUtils\Classes\ErrorLog::info(
 			sprintf(
 				'
 		 效能比較
@@ -250,7 +250,7 @@ abstract class General {
 		$execution_time = round( ( $end - $start ), $precision );
 
 		if ( $print_log ) {
-			\J7WpReactPlugin\vendor\J7\WpUtils\Classes\ErrorLog::info(
+			\R2WpBaziPlugin\vendor\J7\WpUtils\Classes\ErrorLog::info(
 				sprintf(
 					'
 		執行: %1$s

@@ -5,16 +5,16 @@
 
 declare(strict_types=1);
 
-namespace J7\WpReactPlugin\Admin;
+namespace R2\WpBaziPlugin\Admin;
 
-use J7\WpReactPlugin\Utils\Base;
-use J7\WpReactPlugin\Plugin;
+use R2\WpBaziPlugin\Utils\Base;
+use R2\WpBaziPlugin\Plugin;
 
 /**
  * Class CPT
  */
 final class CPT {
-	use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
+	use \R2WpBaziPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 	/**
 	 * Post metas

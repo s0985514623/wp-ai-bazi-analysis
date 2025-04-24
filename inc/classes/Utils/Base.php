@@ -5,7 +5,7 @@
 
 declare (strict_types = 1);
 
-namespace J7\WpReactPlugin\Utils;
+namespace R2\WpBaziPlugin\Utils;
 
 /**
  * Class Base

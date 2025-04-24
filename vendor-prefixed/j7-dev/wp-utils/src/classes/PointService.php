@@ -6,7 +6,7 @@
  * @package J7\WpUtils
  */
 
-namespace J7WpReactPlugin\vendor\J7\WpUtils\Classes;
+namespace R2WpBaziPlugin\vendor\J7\WpUtils\Classes;
 
 use Exception;
 
@@ -19,7 +19,7 @@ if (class_exists('PointService')) {
  */
 final class PointService {
 
-	use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
+	use \R2WpBaziPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 	public const POST_TYPE = 'wpu_point';
 	public $default_point  = null;

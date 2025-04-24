@@ -3,7 +3,7 @@
  * WC Product CRUD 相關 utils
  */
 
-namespace J7WpReactPlugin\vendor\J7\WpUtils\Classes\WC;
+namespace R2WpBaziPlugin\vendor\J7\WpUtils\Classes\WC;
 
 if ( class_exists( 'Product' ) ) {
 	return;

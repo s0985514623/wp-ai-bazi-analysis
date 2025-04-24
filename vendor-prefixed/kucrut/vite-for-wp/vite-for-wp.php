@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-namespace J7WpReactPlugin\vendor\Kucrut\Vite;
+namespace R2WpBaziPlugin\vendor\Kucrut\Vite;
 
 use Exception;
 use WP_HTML_Tag_Processor;

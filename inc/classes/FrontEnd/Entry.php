@@ -5,14 +5,14 @@
 
 declare(strict_types=1);
 
-namespace J7\WpReactPlugin\FrontEnd;
+namespace R2\WpBaziPlugin\FrontEnd;
 
-use J7\WpReactPlugin\Utils\Base;
+use R2\WpBaziPlugin\Utils\Base;
 /**
  * Class Entry
  */
 final class Entry {
-	use \J7WpReactPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
+	use \R2WpBaziPlugin\vendor\J7\WpUtils\Traits\SingletonTrait;
 
 	/**
 	 * Constructor

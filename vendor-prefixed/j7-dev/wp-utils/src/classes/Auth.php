@@ -5,7 +5,7 @@
  * @package J7\WpUtils
  */
 
-namespace J7WpReactPlugin\vendor\J7\WpUtils\Classes;
+namespace R2WpBaziPlugin\vendor\J7\WpUtils\Classes;
 
 if ( class_exists( 'Auth' ) ) {
 	return;
@@ -28,7 +28,7 @@ abstract class Auth {
 	 *       array(
 	 *           'methods'             => 'GET',
 	 *           'callback'            => [ $this, 'YOUR_ENDPOINT_CALLBACK' ],
-	 *           'permission_callback' => [ \J7WpReactPlugin\vendor\J7\WpUtils\Classes\Auth, 'check_basic_auth' ],
+	 *           'permission_callback' => [ \R2WpBaziPlugin\vendor\J7\WpUtils\Classes\Auth, 'check_basic_auth' ],
 	 *       )
 	 * );
 	 * @see https://developer.wordpress.org/reference/functions/user_can/

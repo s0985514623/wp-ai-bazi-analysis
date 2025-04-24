@@ -6,7 +6,7 @@
 
 declare( strict_types = 1 );
 
-namespace J7WpReactPlugin\vendor\J7\WpUtils\Classes;
+namespace R2WpBaziPlugin\vendor\J7\WpUtils\Classes;
 
 if ( class_exists( 'UniqueArray' ) ) {
 	return;

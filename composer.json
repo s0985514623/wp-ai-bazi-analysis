@@ -19,8 +19,8 @@
   ],
 	"autoload": {
 		"psr-4": {
-			"J7\\WpReactPlugin\\": "inc/classes/",
-			"J7WpReactPlugin\\vendor\\": "vendor-prefixed/"
+			"R2\\WpBaziPlugin\\": "inc/classes/",
+			"R2WpBaziPlugin\\vendor\\": "vendor-prefixed/"
 		}
 	},
   "config": {
@@ -54,8 +54,8 @@
 	"extra": {
 		"strauss": {
 			"target_directory": "vendor-prefixed",
-			"namespace_prefix": "J7WpReactPlugin\\vendor\\",
-			"classmap_prefix": "J7WpReactPlugin_vendor_",
+			"namespace_prefix": "R2WpBaziPlugin\\vendor\\",
+			"classmap_prefix": "R2WpBaziPlugin_vendor_",
 			"constant_prefix": "J7V_",
 			"classmap_output": true,
 			"update_call_sites": true,
