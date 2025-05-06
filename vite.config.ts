@@ -8,6 +8,17 @@ import path from 'path'
 import { v4wp } from '@kucrut/vite-for-wp'
 
 export default {
+  server: {
+    origin: 'http://localhost:5173',
+    cors: {
+      origin: ['https://bft-123.local'],
+      credentials: true,
+    },
+    hmr: {
+      host: 'localhost',
+      protocol: 'ws',
+    },
+  },
   plugins: [
     alias(),
     react(),

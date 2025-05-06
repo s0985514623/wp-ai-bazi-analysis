@@ -21,7 +21,11 @@ final class Bootstrap {
 	 */
 	public function __construct() {
 		Admin\CPT::instance();
-		FrontEnd\Entry::instance();
+		// FrontEnd\Entry::instance();
+		FrontEnd\Shortcodes::instance();
+		API\AiChat::instance();
+		// error log
+		// error_log('Bootstrap constructor');
 
 		\add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_script' ], 99 );
 		\add_action( 'wp_enqueue_scripts', [ $this, 'frontend_enqueue_script' ], 99 );

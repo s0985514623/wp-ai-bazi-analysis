@@ -52,7 +52,7 @@ if ( ! \class_exists( 'R2\WpBaziPlugin\Plugin' ) ) {
 
 			$this->init(
 				[
-					'app_name'    => 'WP AI 八字命格分析',
+					'app_name'    => 'WP AI Bazi',
 					'github_repo' => 'https://github.com/s0985514623/wp-ai-bazi-analysis',
 					'callback'    => [ Bootstrap::class, 'instance' ],
 				]

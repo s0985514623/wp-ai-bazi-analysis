@@ -1,0 +1,862 @@
+/* 全局样式 */
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+:root {
+  --primary-color: #a83232;
+  --secondary-color: #e0c9a6;
+  --text-color: #333;
+  --background-color: #f8f3e9;
+  --accent-color: #9c0e0e;
+  --gold-color: #d4af37;
+  --card-bg-color: rgba(255, 255, 255, 0.8);
+  --card-border-color: rgba(168, 50, 50, 0.2);
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 容器样式 */
+.container {
+  display: flex;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  font-family: 'Noto Serif SC', serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  background-image: url('https://www.transparenttextures.com/patterns/rice-paper.png');
+}
+
+/* 左侧表单区域 */
+.form-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+              url('https://www.transparenttextures.com/patterns/chinese-paper.png');
+  border-right: 1px solid rgba(168, 50, 50, 0.3);
+  position: relative;
+  overflow-y: auto;
+}
+
+.form-section:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--primary-color));
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 450px;
+  padding: 25px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--secondary-color);
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.form-wrapper:before, .form-wrapper:after {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--primary-color);
+  z-index: 0;
+}
+
+.form-wrapper:before {
+  top: -5px;
+  left: -5px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.form-wrapper:after {
+  bottom: -5px;
+  right: -5px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Ant Design自定义样式 */
+.antd-bazi-form .ant-form-item-label > label {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.antd-bazi-form .ant-select-selector {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: #d9d9d9 !important;
+}
+
+.antd-bazi-form .ant-select-selector:hover {
+  border-color: var(--primary-color) !important;
+}
+
+.antd-bazi-form .ant-select-focused .ant-select-selector,
+.antd-bazi-form .ant-select-selector:focus,
+.antd-bazi-form .ant-select-open .ant-select-selector {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(168, 50, 50, 0.2) !important;
+}
+
+.antd-bazi-form .ant-input {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.antd-bazi-form .ant-input:hover {
+  border-color: var(--primary-color) !important;
+}
+
+.antd-bazi-form .ant-input:focus,
+.antd-bazi-form .ant-input-focused {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(168, 50, 50, 0.2) !important;
+}
+
+.antd-bazi-form .ant-btn-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+  transition: all 0.3s ease;
+}
+
+.antd-bazi-form .ant-btn-primary:hover,
+.antd-bazi-form .ant-btn-primary:focus {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.error-message {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 4px;
+  color: #ff4d4f;
+}
+
+.error-message p {
+  margin: 0 0 10px;
+}
+
+.error-message p:last-child {
+  margin-bottom: 0;
+}
+
+/* 原有样式 */
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--primary-color);
+  font-size: 36px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+h1:after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 2px;
+  background-color: var(--primary-color);
+  margin: 10px auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Noto Serif SC', serif;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.birth-time, .birthplace {
+  display: flex;
+  gap: 10px;
+}
+
+.birth-time input, .birth-time select,
+.birthplace input {
+  flex: 1;
+}
+
+.submit-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn:hover {
+  background-color: var(--accent-color);
+}
+
+.submit-btn:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.submit-btn:hover:after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
+}
+
+/* 右侧视频/结果区域 */
+.result-section {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+#background-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.video-overlay h2 {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 48px;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.video-overlay p {
+  font-size: 18px;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* 加载动画 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(168, 50, 50, 0.5);
+  max-width: 300px;
+  width: 100%;
+}
+
+.loading-symbol {
+  margin-bottom: 20px;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+}
+
+.yin-yang {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: url('https://upload.wikimedia.org/wikipedia/commons/1/17/Yin_yang.svg') no-repeat center center;
+  background-size: contain;
+  margin: 0 auto;
+  animation: spin 2s linear infinite;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-content p {
+  font-size: 20px;
+  margin-top: 25px;
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--secondary-color);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  letter-spacing: 2px;
+}
+
+/* 八字结果样式 - 重新设计 */
+.bazi-result {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('https://www.transparenttextures.com/patterns/rice-paper.png'), var(--background-color);
+  padding: 20px;
+  display: none;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+/* 顶部信息区 */
+.result-header {
+  margin-bottom: 30px;
+}
+
+.bazi-result h2 {
+  text-align: center;
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--primary-color);
+  font-size: 32px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.bazi-result h2:after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 2px;
+  background-color: var(--primary-color);
+  margin: 10px auto;
+}
+
+.user-info {
+  margin-bottom: 20px;
+  background-color: var(--card-bg-color);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+  box-shadow: var(--card-shadow);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.user-info p {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.user-info p span:first-child {
+  font-weight: bold;
+  color: var(--accent-color);
+  margin-right: 10px;
+}
+
+/* 核心分析区 - 网格布局 */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.analysis-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 通用卡片样式 */
+.analysis-card {
+  background-color: var(--card-bg-color);
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+  border: 1px solid var(--card-border-color);
+}
+
+.analysis-card h3 {
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--accent-color);
+  margin-bottom: 15px;
+  font-size: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.analysis-card h3:after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 2px;
+  background-color: var(--accent-color);
+  margin: 8px auto;
+  opacity: 0.7;
+}
+
+/* 八字盘样式 */
+.bazi-chart .chart-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.chart-item {
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid var(--secondary-color);
+  margin: 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+.chart-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.chart-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heavenly, .earthly {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border-radius: 50%;
+  margin: 5px;
+}
+
+.heavenly {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.earthly {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+/* 五行分布样式 */
+.elements-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.element-item {
+  flex: 1;
+  min-width: 60px;
+  text-align: center;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.element-name {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.element-value {
+  font-size: 24px;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* 五行狀態與日主區塊樣式 */
+.five-elements-status {
+  margin-top: 20px;
+}
+
+.five-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.five-status-item {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  padding: 15px;
+  text-align: center;
+}
+
+.five-status-item h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--accent-color);
+}
+
+.five-status-item h3:after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 2px;
+  background-color: var(--accent-color);
+  margin: 5px auto;
+  opacity: 0.7;
+}
+
+.five-status-item p {
+  font-size: 20px;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+#day-master-strength {
+  font-size: 16px;
+  margin-top: 5px;
+  font-weight: normal;
+  color: var(--accent-color);
+}
+
+/* 性格分析与五行建议样式 */
+.personality-analysis,
+.element-suggestions {
+  height: 100%;
+}
+
+.personality-analysis p,
+.element-suggestions p {
+  line-height: 1.6;
+  font-size: 16px;
+  text-align: justify;
+  color: var(--text-color);
+  white-space: pre-line;
+}
+
+/* 返回按钮 */
+.back-btn {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto 20px;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.back-btn:hover {
+  background-color: var(--accent-color);
+}
+
+/* 相關商品樣式 */
+.related-products {
+  margin: 40px auto;
+  max-width: 1200px;
+}
+
+.related-products h2 {
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.related-products h2:after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 2px;
+  background-color: var(--primary-color);
+  margin: 10px auto;
+}
+
+.recommendation-intro {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text-color);
+  font-size: 16px;
+}
+
+.products-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.product-card {
+  background-color: var(--card-bg-color);
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+.product-info {
+  padding: 15px;
+}
+
+.product-name {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: var(--accent-color);
+}
+
+.product-description {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-price {
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--primary-color);
+  margin-bottom: 12px;
+}
+
+.product-elements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.product-element {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.product-button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.product-button:hover {
+  background-color: var(--accent-color);
+}
+
+.no-products {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-color);
+  background-color: var(--card-bg-color);
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  margin-top: 20px;
+}
+
+/* 响应式设计 */
+@media (max-width: 991px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .five-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .products-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .form-section {
+    flex: none;
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .form-wrapper {
+    max-width: 100%;
+    padding: 15px;
+  }
+  
+  .result-section {
+    flex: none;
+    height: 100vh;
+  }
+  
+  .chart-item {
+    min-width: 80px;
+  }
+  
+  .element-item {
+    min-width: 50px;
+  }
+  
+  .five-status-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .products-container {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section {
+    padding: 5px;
+  }
+  
+  .form-wrapper {
+    padding: 10px;
+  }
+  
+  .birth-time, .birthplace {
+    flex-direction: column;
+  }
+  
+  .birth-time input, .birth-time select,
+  .birthplace input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .chart-container {
+    justify-content: center;
+  }
+  
+  .chart-item {
+    flex: 0 1 calc(50% - 10px);
+  }
+  
+  .user-info p {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-info p span:first-child {
+    margin-bottom: 5px;
+  }
+  
+  .bazi-result {
+    padding: 15px 10px;
+  }
+  
+  .products-container {
+    grid-template-columns: 1fr;
+  }
+} 
