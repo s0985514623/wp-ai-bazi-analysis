@@ -37,7 +37,7 @@ module.exports = {
         ? 'yarn sync:version && echo ✅ sync version success'
         : 'echo 🚫 skip sync version',
       'yarn create:release && echo ✅ create release files success',
-      `cd release/${releasedPluginName}/${releasedPluginName} && composer install --no-dev && cd ../.. && echo ✅ composer install success`,
+      `cd release/${releasedPluginName}/${releasedPluginName} && composer install --no-dev --no-scripts && cd ../.. && echo ✅ composer install success`,
       'yarn zip && echo ✅ create zip success',
     ], // run after bumping version
     // 'after:git:release': 'echo After git push, before github release', // run after git push, before github release
@@ -62,5 +62,6 @@ module.exports = {
     'index.php',
     'plugin.php',
     'README.md',
+    'vendor-prefixed',
   ],
 }
