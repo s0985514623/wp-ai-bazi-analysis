@@ -16,7 +16,6 @@ if ( class_exists( 'Log' ) ) {
 
 /**
  * Log class
- *
  * @deprecated
  */
 abstract class Log {
