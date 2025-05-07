@@ -36,7 +36,7 @@
     "squizlabs/php_codesniffer": "@stable",
     "wp-coding-standards/wpcs": "@stable",
     "dealerdirect/phpcodesniffer-composer-installer": "@stable",
-		"brianhenryie/strauss": "^0.20.1"
+    "brianhenryie/strauss": "^0.20.1"
   },
   "scripts": {
     "lint": "phpcs",
