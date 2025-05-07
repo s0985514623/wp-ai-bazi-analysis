@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace R2\WpBaziPlugin\API;
 
+use R2\WpBaziPlugin\Admin\ApiSettings;
+
 /**
  * Class AiChat
  */
@@ -30,14 +32,18 @@ class AiChat {
 	}
 
 	/**
-	 * 处理八字命格分析请求
+	 * 處理八字命格分析請求
 	 */
 	public function handle_bazi_analysis( $request ) {
-		$data    = $request->get_json_params();
-		$api_key = 'sk-996a8b520bbb40a191eb9e30e632e22b'; // 从环境变量或配置中获取
-		$api_url = 'https://api.deepseek.com/chat/completions';
+		$data = $request->get_json_params();
 
-		// 获取表单数据
+		// 使用設置頁面的配置
+		$api_settings = ApiSettings::get_api_settings();
+		$api_key      = $api_settings['api_key'];
+		$api_url      = $api_settings['api_url'];
+		$api_model    = $api_settings['api_model'];
+
+		// 獲取表單數據
 		$gender        = $data['gender'] === 'male' ? '男' : '女';
 		$year          = intval($data['year']);
 		$month         = intval($data['month']);
@@ -47,7 +53,7 @@ class AiChat {
 		$country       = sanitize_text_field($data['country']);
 		$analysis_type = sanitize_text_field($data['analysis_type']);
 
-		// 获取中文时辰
+		// 獲取中文時辰
 		$chinese_hour = '';
 		if ($hour !== 'unknown') {
 			$chinese_hours = [
@@ -67,7 +73,7 @@ class AiChat {
 			$chinese_hour  = $chinese_hours[ intval($hour) ];
 		}
 
-		// 构建发送到DeepSeek API的提示
+		// 構建發送到DeepSeek API的提示
 		$prompt  = "請根據以下八字資料進行命格分析：\n";
 		$prompt .= "性別：{$gender}\n";
 		$prompt .= "生年：{$year}\n";
@@ -146,21 +152,21 @@ class AiChat {
 		$prompt .= "   - personalityAnalysis: \"分析內容\"\n";
 		$prompt .= "   - elementSuggestions: \"五行補充建議內容\"\n";
 
-		// 准备DeepSeek API请求数据
+		// 準備DeepSeek API請求數據
 		$request_data = [
-			'model'       => 'deepseek-chat',
+			'model'       => $api_model,
 			'messages'    => [
 				[
 					'role'    => 'user',
 					'content' => $prompt,
 				],
 			],
-			'temperature' => 0.7,
-			'max_tokens'  => 2000,
+			'temperature' => $api_settings['temperature'],
+			'max_tokens'  => $api_settings['max_tokens'],
 		];
 		// error log
 		\error_log(print_r($request_data, true));
-		// 发送请求到DeepSeek API
+		// 發送請求到DeepSeek API
 		$response = \wp_remote_post(
 			$api_url,
 			[
@@ -174,18 +180,18 @@ class AiChat {
 			);
 
 		if (is_wp_error($response)) {
-			return new \WP_Error('api_error', 'API请求失败', [ 'status' => 500 ]);
+			return new \WP_Error('api_error', 'API請求失敗', [ 'status' => 500 ]);
 		}
 		// error log
 		\error_log(print_r($response, true));
 		$body   = \wp_remote_retrieve_body($response);
 		$result = json_decode($body, true);
 
-		// 处理DeepSeek API返回的结果
+		// 處理DeepSeek API返回的結果
 		try {
 			$content = $result['choices'][0]['message']['content'];
 
-			// 尝试从返回结果中提取JSON
+			// 嘗試從返回結果中提取JSON
 			$json_match = preg_match('/```json\n([\s\S]*?)\n```/', $content, $matches) ||
 			preg_match('/```\n([\s\S]*?)\n```/', $content, $matches) ||
 			preg_match('/{[\s\S]*?}/', $content, $matches);
@@ -240,32 +246,32 @@ class AiChat {
 					$bazi_data
 					);
 			} else {
-				// 如果没有找到JSON格式，返回错误
-				return new \WP_Error('parse_error', '无法解析分析结果', [ 'status' => 500 ]);
+				// 如果沒有找到JSON格式，返回錯誤
+				return new \WP_Error('parse_error', '無法解析分析結果', [ 'status' => 500 ]);
 			}
 
-			// 合并用户数据和分析结果
+			// 合併用戶數據和分析結果
 			$response_data = array_merge($data, $bazi_data);
 
-			// 根据缺失和偏弱的五行获取相关商品
+			// 根據缺失和偏弱的五行獲取相關商品
 			$missing_elements = $bazi_data['missingElements'] ?? '';
 			$weak_elements    = $bazi_data['weakElements'] ?? '';
 
-			// 获取相关商品
+			// 獲取相關商品
 			$related_products                 = $this->get_five_element_products($missing_elements, $weak_elements);
 			$response_data['relatedProducts'] = $related_products;
 
 			return \rest_ensure_response($response_data);
 		} catch (\Exception $e) {
-			return new \WP_Error('parse_error', '处理分析结果时出错: ' . $e->getMessage(), [ 'status' => 500 ]);
+			return new \WP_Error('parse_error', '處理分析結果時出錯: ' . $e->getMessage(), [ 'status' => 500 ]);
 		}
 	}
 
 	/**
-	 * 根据五行获取相关产品
+	 * 根據五行獲取相關產品
 	 */
 	private function get_five_element_products( $missing_elements, $weak_elements ) {
-		// 将中文五行转换为英文标识
+		// 將中文五行轉換為英文標識
 		$elements_map = [
 			'金' => 'metal',
 			'木' => 'wood',
@@ -277,7 +283,7 @@ class AiChat {
 		// 解析缺失和偏弱的五行
 		$elements_to_find = [];
 
-		// 处理缺失的五行
+		// 處理缺失的五行
 		if (!empty($missing_elements)) {
 			$missing_array = preg_split('/[,、，]/', $missing_elements);
 			foreach ($missing_array as $element) {
@@ -288,7 +294,7 @@ class AiChat {
 			}
 		}
 
-		// 处理偏弱的五行
+		// 處理偏弱的五行
 		if (!empty($weak_elements)) {
 			$weak_array = preg_split('/[,、，]/', $weak_elements);
 			foreach ($weak_array as $element) {
@@ -299,7 +305,7 @@ class AiChat {
 			}
 		}
 
-		// 如果没有找到需要的五行，返回空
+		// 如果沒有找到需要的五行，返回空
 		if (empty($elements_to_find)) {
 			return [];
 		}
@@ -381,7 +387,7 @@ class AiChat {
 	}
 
 	/**
-	 * 获取产品的五行分类标识（英文slug）
+	 * 獲取產品的五行分類標識（英文slug）
 	 */
 	private function get_product_element_slugs( $product_id ) {
 		$element_slugs    = [ 'metal', 'wood', 'water', 'fire', 'earth' ];
@@ -401,7 +407,7 @@ class AiChat {
 	}
 
 	/**
-	 * 创建产品数据
+	 * 創建產品數據
 	 */
 	private function create_product_data( $product_id, $element_slugs ) {
 		$element_map = [

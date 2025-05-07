@@ -32,5 +32,6 @@ release/*
 *.sw?
 
 /vendor/
+/.vscode
 
 composer.lock

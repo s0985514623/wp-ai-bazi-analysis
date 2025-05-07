@@ -20,7 +20,8 @@ final class Bootstrap {
 	 * Constructor
 	 */
 	public function __construct() {
-		Admin\CPT::instance();
+		// Admin\CPT::instance();
+		Admin\ApiSettings::instance();
 		// FrontEnd\Entry::instance();
 		FrontEnd\Shortcodes::instance();
 		API\AiChat::instance();
