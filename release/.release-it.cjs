@@ -11,7 +11,7 @@
  * @see https://github.com/release-it/release-it/blob/main/docs/configuration.md
  */
 
-const releasedPluginName = 'wp-react-plugin'
+const releasedPluginName = 'wp-ai-bazi'
 
 const args = process.argv.slice(2) // remove 2 default args
 
@@ -32,6 +32,7 @@ module.exports = {
     // 'after:[my-plugin]:bump': './bin/my-script.sh', // run after bumping version of my-plugin
     'after:bump': [
       'yarn build && echo ✅ build success',
+      'composer run pre-release && echo ✅ composer pre-release success',
       release
         ? 'yarn sync:version && echo ✅ sync version success'
         : 'echo 🚫 skip sync version',

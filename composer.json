@@ -49,7 +49,11 @@
 		],
 		"post-update-cmd": [
 			"@prefix-namespaces"
-		]
+		],
+    "pre-release": [
+      "composer install",
+      "strauss"
+    ]
   },
 	"extra": {
 		"strauss": {
