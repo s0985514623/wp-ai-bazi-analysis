@@ -339,7 +339,7 @@ input, select {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: url('https://upload.wikimedia.org/wikipedia/commons/1/17/Yin_yang.svg') no-repeat center center;
+  background: url('@/assets/images/Yin_yang.svg') no-repeat center center;
   background-size: contain;
   margin: 0 auto;
   animation: spin 2s linear infinite;
