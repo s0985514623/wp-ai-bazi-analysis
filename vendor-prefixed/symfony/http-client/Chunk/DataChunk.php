@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Chunk;
 
@@ -18,41 +18,49 @@ use R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient\ChunkInterface;
  *
  * @internal
  */
-class DataChunk implements ChunkInterface {
+class DataChunk implements ChunkInterface
+{
+    private int $offset = 0;
+    private string $content = '';
 
-	private int $offset     = 0;
-	private string $content = '';
+    public function __construct(int $offset = 0, string $content = '')
+    {
+        $this->offset = $offset;
+        $this->content = $content;
+    }
 
-	public function __construct( int $offset = 0, string $content = '' ) {
-		$this->offset  = $offset;
-		$this->content = $content;
-	}
+    public function isTimeout(): bool
+    {
+        return false;
+    }
 
-	public function isTimeout(): bool {
-		return false;
-	}
+    public function isFirst(): bool
+    {
+        return false;
+    }
 
-	public function isFirst(): bool {
-		return false;
-	}
+    public function isLast(): bool
+    {
+        return false;
+    }
 
-	public function isLast(): bool {
-		return false;
-	}
+    public function getInformationalStatus(): ?array
+    {
+        return null;
+    }
 
-	public function getInformationalStatus(): ?array {
-		return null;
-	}
+    public function getContent(): string
+    {
+        return $this->content;
+    }
 
-	public function getContent(): string {
-		return $this->content;
-	}
+    public function getOffset(): int
+    {
+        return $this->offset;
+    }
 
-	public function getOffset(): int {
-		return $this->offset;
-	}
-
-	public function getError(): ?string {
-		return null;
-	}
+    public function getError(): ?string
+    {
+        return null;
+    }
 }

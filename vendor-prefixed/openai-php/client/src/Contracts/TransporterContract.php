@@ -14,29 +14,28 @@ use R2WpBaziPlugin\vendor\Psr\Http\Message\ResponseInterface;
 /**
  * @internal
  */
-interface TransporterContract {
+interface TransporterContract
+{
+    /**
+     * Sends a request to a server.
+     *
+     * @return Response<array<array-key, mixed>|string>
+     *
+     * @throws ErrorException|UnserializableResponse|TransporterException
+     */
+    public function requestObject(Payload $payload): Response;
 
-	/**
-	 * Sends a request to a server.
-	 *
-	 * @return Response<array<array-key, mixed>|string>
-	 *
-	 * @throws ErrorException|UnserializableResponse|TransporterException
-	 */
-	public function requestObject( Payload $payload ): Response;
+    /**
+     * Sends a content request to a server.
+     *
+     * @throws ErrorException|TransporterException
+     */
+    public function requestContent(Payload $payload): string;
 
-	/**
-	 * Sends a content request to a server.
-	 *
-	 * @throws ErrorException|TransporterException
-	 */
-	public function requestContent( Payload $payload ): string;
-
-	/**
-	 * Sends a stream request to a server.
-	 * *
-	 *
-	 * @throws ErrorException
-	 */
-	public function requestStream( Payload $payload ): ResponseInterface;
+    /**
+     * Sends a stream request to a server.
+     **
+     * @throws ErrorException
+     */
+    public function requestStream(Payload $payload): ResponseInterface;
 }

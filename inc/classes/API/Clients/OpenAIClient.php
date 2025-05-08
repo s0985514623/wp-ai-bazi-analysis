@@ -1,13 +1,13 @@
 <?php
 /**
- * OpenAI 客戶端
+ * R2WpBaziPlugin_vendor_OpenAI 客戶端
  */
 
 declare (strict_types = 1);
 
 namespace R2\WpBaziPlugin\API\Clients;
 
-use OpenAI;
+use R2WpBaziPlugin_vendor_OpenAI as OpenAI;
 
 /**
  * OpenAI 客戶端類
@@ -19,7 +19,7 @@ class OpenAIClient extends BaseClient {
 	/**
 	 * OpenAI 客戶端實例
 	 *
-	 * @var \OpenAI\Client
+	 * @var \R2WpBaziPlugin\vendor\OpenAI\Client
 	 */
 	private $client;
 

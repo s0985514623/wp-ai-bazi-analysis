@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient;
 
@@ -15,66 +15,70 @@ use R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient\HttpClientInterface;
 use R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient\ResponseInterface;
 use R2WpBaziPlugin\vendor\Symfony\Contracts\Service\ResetInterface;
 
-class UriTemplateHttpClient implements HttpClientInterface, ResetInterface {
+class UriTemplateHttpClient implements HttpClientInterface, ResetInterface
+{
+    use DecoratorTrait;
 
-	use DecoratorTrait;
+    /**
+     * @param (\Closure(string $url, array $vars): string)|null $expander
+     */
+    public function __construct(?HttpClientInterface $client = null, private ?\Closure $expander = null, private array $defaultVars = [])
+    {
+        $this->client = $client ?? HttpClient::create();
+    }
 
-	/**
-	 * @param (\Closure(string $url, array $vars): string)|null $expander
-	 */
-	public function __construct( ?HttpClientInterface $client = null, private ?\Closure $expander = null, private array $defaultVars = [] ) {
-		$this->client = $client ?? HttpClient::create();
-	}
+    public function request(string $method, string $url, array $options = []): ResponseInterface
+    {
+        $vars = $this->defaultVars;
 
-	public function request( string $method, string $url, array $options = [] ): ResponseInterface {
-		$vars = $this->defaultVars;
+        if (\array_key_exists('vars', $options)) {
+            if (!\is_array($options['vars'])) {
+                throw new \InvalidArgumentException('The "vars" option must be an array.');
+            }
 
-		if (\array_key_exists('vars', $options)) {
-			if (!\is_array($options['vars'])) {
-				throw new \InvalidArgumentException('The "vars" option must be an array.');
-			}
+            $vars = [...$vars, ...$options['vars']];
+            unset($options['vars']);
+        }
 
-			$vars = [ ...$vars, ...$options['vars'] ];
-			unset($options['vars']);
-		}
+        if ($vars) {
+            $url = ($this->expander ??= $this->createExpanderFromPopularVendors())($url, $vars);
+        }
 
-		if ($vars) {
-			$url = ( $this->expander ??= $this->createExpanderFromPopularVendors() )($url, $vars);
-		}
+        return $this->client->request($method, $url, $options);
+    }
 
-		return $this->client->request($method, $url, $options);
-	}
+    public function withOptions(array $options): static
+    {
+        if (!\is_array($options['vars'] ?? [])) {
+            throw new \InvalidArgumentException('The "vars" option must be an array.');
+        }
 
-	public function withOptions( array $options ): static {
-		if (!\is_array($options['vars'] ?? [])) {
-			throw new \InvalidArgumentException('The "vars" option must be an array.');
-		}
+        $clone = clone $this;
+        $clone->defaultVars = [...$clone->defaultVars, ...$options['vars'] ?? []];
+        unset($options['vars']);
 
-		$clone              = clone $this;
-		$clone->defaultVars = [ ...$clone->defaultVars, ...$options['vars'] ?? [] ];
-		unset($options['vars']);
+        $clone->client = $this->client->withOptions($options);
 
-		$clone->client = $this->client->withOptions($options);
+        return $clone;
+    }
 
-		return $clone;
-	}
+    /**
+     * @return \Closure(string $url, array $vars): string
+     */
+    private function createExpanderFromPopularVendors(): \Closure
+    {
+        if (class_exists(\GuzzleHttp\UriTemplate\UriTemplate::class)) {
+            return \GuzzleHttp\UriTemplate\UriTemplate::expand(...);
+        }
 
-	/**
-	 * @return \Closure(string $url, array $vars): string
-	 */
-	private function createExpanderFromPopularVendors(): \Closure {
-		if (class_exists(\GuzzleHttp\UriTemplate\UriTemplate::class)) {
-			return \GuzzleHttp\UriTemplate\UriTemplate::expand(...);
-		}
+        if (class_exists(\League\Uri\UriTemplate::class)) {
+            return static fn (string $url, array $vars): string => (new \League\Uri\UriTemplate($url))->expand($vars);
+        }
 
-		if (class_exists(\League\Uri\UriTemplate::class)) {
-			return static fn ( string $url, array $vars ): string => ( new \League\Uri\UriTemplate($url) )->expand($vars);
-		}
+        if (class_exists(\Rize\UriTemplate::class)) {
+            return (new \Rize\UriTemplate())->expand(...);
+        }
 
-		if (class_exists(\Rize\UriTemplate::class)) {
-			return ( new \Rize\UriTemplate() )->expand(...);
-		}
-
-		throw new \LogicException('Support for URI template requires a vendor to expand the URI. Run "composer require guzzlehttp/uri-template" or pass your own expander \Closure implementation.');
-	}
+        throw new \LogicException('Support for URI template requires a vendor to expand the URI. Run "composer require guzzlehttp/uri-template" or pass your own expander \Closure implementation.');
+    }
 }

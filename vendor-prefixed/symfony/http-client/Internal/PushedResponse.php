@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Internal;
 
@@ -20,13 +20,13 @@ use R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Response\CurlResponse;
  *
  * @internal
  */
-final class PushedResponse {
-
-	public function __construct(
-		public CurlResponse $response,
-		public array $requestHeaders,
-		public array $parentOptions,
-		public \CurlHandle $handle,
-	) {
-	}
+final class PushedResponse
+{
+    public function __construct(
+        public CurlResponse $response,
+        public array $requestHeaders,
+        public array $parentOptions,
+        public \CurlHandle $handle,
+    ) {
+    }
 }

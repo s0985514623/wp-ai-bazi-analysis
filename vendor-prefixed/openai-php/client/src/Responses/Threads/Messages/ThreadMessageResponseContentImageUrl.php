@@ -11,42 +11,41 @@ use R2WpBaziPlugin\vendor\OpenAI\Testing\Responses\Concerns\Fakeable;
 /**
  * @implements ResponseContract<array{url: string, detail?: string}>
  */
-final class ThreadMessageResponseContentImageUrl implements ResponseContract {
+final class ThreadMessageResponseContentImageUrl implements ResponseContract
+{
+    /**
+     * @use ArrayAccessible<array{url: string, detail?: string}>
+     */
+    use ArrayAccessible;
 
-	/**
-	 * @use ArrayAccessible<array{url: string, detail?: string}>
-	 */
-	use ArrayAccessible;
+    use Fakeable;
 
-	use Fakeable;
+    private function __construct(
+        public string $url,
+        public ?string $detail,
+    ) {}
 
-	private function __construct(
-		public string $url,
-		public ?string $detail,
-	) {}
+    /**
+     * Acts as static factory, and returns a new Response instance.
+     *
+     * @param  array{url: string, detail?: string}  $attributes
+     */
+    public static function from(array $attributes): self
+    {
+        return new self(
+            $attributes['url'],
+            $attributes['detail'] ?? null,
+        );
+    }
 
-	/**
-	 * Acts as static factory, and returns a new Response instance.
-	 *
-	 * @param  array{url: string, detail?: string} $attributes
-	 */
-	public static function from( array $attributes ): self {
-		return new self(
-			$attributes['url'],
-			$attributes['detail'] ?? null,
-		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array {
-		return array_filter(
-			[
-				'url'    => $this->url,
-				'detail' => $this->detail,
-			],
-			fn ( ?string $value ): bool => $value !== null
-			);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public function toArray(): array
+    {
+        return array_filter([
+            'url' => $this->url,
+            'detail' => $this->detail,
+        ], fn (?string $value): bool => $value !== null);
+    }
 }

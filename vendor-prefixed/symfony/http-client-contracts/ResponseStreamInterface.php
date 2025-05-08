@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient;
 
@@ -18,9 +18,9 @@ namespace R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient;
  *
  * @extends \Iterator<ResponseInterface, ChunkInterface>
  */
-interface ResponseStreamInterface extends \Iterator {
+interface ResponseStreamInterface extends \Iterator
+{
+    public function key(): ResponseInterface;
 
-	public function key(): ResponseInterface;
-
-	public function current(): ChunkInterface;
+    public function current(): ChunkInterface;
 }

@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Contracts\Service;
 
@@ -24,10 +24,10 @@ namespace R2WpBaziPlugin\vendor\Symfony\Contracts\Service;
  * process loop (note that we advise making your services stateless instead of
  * implementing this interface when possible.)
  */
-interface ResetInterface {
-
-	/**
-	 * @return void
-	 */
-	public function reset();
+interface ResetInterface
+{
+    /**
+     * @return void
+     */
+    public function reset();
 }

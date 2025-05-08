@@ -11,6 +11,6 @@ use R2WpBaziPlugin\vendor\Http\Discovery\Exception;
  *
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>
  */
-/* final */ class NotFoundException extends \RuntimeException implements Exception {
-
+/* final */ class NotFoundException extends \RuntimeException implements Exception
+{
 }

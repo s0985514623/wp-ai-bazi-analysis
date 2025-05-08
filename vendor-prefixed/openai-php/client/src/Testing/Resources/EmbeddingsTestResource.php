@@ -7,15 +7,17 @@ use R2WpBaziPlugin\vendor\OpenAI\Resources\Embeddings;
 use R2WpBaziPlugin\vendor\OpenAI\Responses\Embeddings\CreateResponse;
 use R2WpBaziPlugin\vendor\OpenAI\Testing\Resources\Concerns\Testable;
 
-final class EmbeddingsTestResource implements EmbeddingsContract {
+final class EmbeddingsTestResource implements EmbeddingsContract
+{
+    use Testable;
 
-	use Testable;
+    protected function resource(): string
+    {
+        return Embeddings::class;
+    }
 
-	protected function resource(): string {
-		return Embeddings::class;
-	}
-
-	public function create( array $parameters ): CreateResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
+    public function create(array $parameters): CreateResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 }

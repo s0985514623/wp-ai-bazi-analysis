@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Contracts\Service;
 
@@ -21,25 +21,25 @@ use R2WpBaziPlugin\vendor\Psr\Container\ContainerInterface;
  *
  * @template-covariant T of mixed
  */
-interface ServiceProviderInterface extends ContainerInterface {
+interface ServiceProviderInterface extends ContainerInterface
+{
+    /**
+     * @return T
+     */
+    public function get(string $id): mixed;
 
-	/**
-	 * @return T
-	 */
-	public function get( string $id ): mixed;
+    public function has(string $id): bool;
 
-	public function has( string $id ): bool;
-
-	/**
-	 * Returns an associative array of service types keyed by the identifiers provided by the current container.
-	 *
-	 * Examples:
-	 *
-	 *  * ['logger' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] means the object provides a service named "logger" that implements R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface
-	 *  * ['foo' => '?'] means the container provides service name "foo" of unspecified type
-	 *  * ['bar' => '?Bar\Baz'] means the container provides a service "bar" of type Bar\Baz|null
-	 *
-	 * @return array<string, string> The provided service types, keyed by service names
-	 */
-	public function getProvidedServices(): array;
+    /**
+     * Returns an associative array of service types keyed by the identifiers provided by the current container.
+     *
+     * Examples:
+     *
+     *  * ['logger' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] means the object provides a service named "logger" that implements R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface
+     *  * ['foo' => '?'] means the container provides service name "foo" of unspecified type
+     *  * ['bar' => '?Bar\Baz'] means the container provides a service "bar" of type Bar\Baz|null
+     *
+     * @return array<string, string> The provided service types, keyed by service names
+     */
+    public function getProvidedServices(): array;
 }

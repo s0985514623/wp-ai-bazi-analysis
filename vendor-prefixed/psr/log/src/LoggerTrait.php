@@ -10,81 +10,89 @@ namespace R2WpBaziPlugin\vendor\Psr\Log;
  * reduce boilerplate code that a simple Logger that does the same thing with
  * messages regardless of the error level has to implement.
  */
-trait LoggerTrait {
+trait LoggerTrait
+{
+    /**
+     * System is unusable.
+     */
+    public function emergency(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::EMERGENCY, $message, $context);
+    }
 
-	/**
-	 * System is unusable.
-	 */
-	final public function emergency( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::EMERGENCY, $message, $context);
-	}
+    /**
+     * Action must be taken immediately.
+     *
+     * Example: Entire website down, database unavailable, etc. This should
+     * trigger the SMS alerts and wake you up.
+     */
+    public function alert(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::ALERT, $message, $context);
+    }
 
-	/**
-	 * Action must be taken immediately.
-	 *
-	 * Example: Entire website down, database unavailable, etc. This should
-	 * trigger the SMS alerts and wake you up.
-	 */
-	final public function alert( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::ALERT, $message, $context);
-	}
+    /**
+     * Critical conditions.
+     *
+     * Example: Application component unavailable, unexpected exception.
+     */
+    public function critical(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::CRITICAL, $message, $context);
+    }
 
-	/**
-	 * Critical conditions.
-	 *
-	 * Example: Application component unavailable, unexpected exception.
-	 */
-	final public function critical( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::CRITICAL, $message, $context);
-	}
+    /**
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
+     */
+    public function error(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::ERROR, $message, $context);
+    }
 
-	/**
-	 * Runtime errors that do not require immediate action but should typically
-	 * be logged and monitored.
-	 */
-	final public function error( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::ERROR, $message, $context);
-	}
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
+     */
+    public function warning(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::WARNING, $message, $context);
+    }
 
-	/**
-	 * Exceptional occurrences that are not errors.
-	 *
-	 * Example: Use of deprecated APIs, poor use of an API, undesirable things
-	 * that are not necessarily wrong.
-	 */
-	final public function warning( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::WARNING, $message, $context);
-	}
+    /**
+     * Normal but significant events.
+     */
+    public function notice(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::NOTICE, $message, $context);
+    }
 
-	/**
-	 * Normal but significant events.
-	 */
-	final public function notice( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::NOTICE, $message, $context);
-	}
+    /**
+     * Interesting events.
+     *
+     * Example: User logs in, SQL logs.
+     */
+    public function info(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::INFO, $message, $context);
+    }
 
-	/**
-	 * Interesting events.
-	 *
-	 * Example: User logs in, SQL logs.
-	 */
-	final public function info( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::INFO, $message, $context);
-	}
+    /**
+     * Detailed debug information.
+     */
+    public function debug(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::DEBUG, $message, $context);
+    }
 
-	/**
-	 * Detailed debug information.
-	 */
-	final public function debug( string|\Stringable $message, array $context = [] ): void {
-		$this->log(LogLevel::DEBUG, $message, $context);
-	}
-
-	/**
-	 * Logs with an arbitrary level.
-	 *
-	 * @param mixed $level
-	 *
-	 * @throws \R2WpBaziPlugin\vendor\Psr\Log\InvalidArgumentException
-	 */
-	abstract public function log( $level, string|\Stringable $message, array $context = [] ): void;
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed $level
+     *
+     * @throws \R2WpBaziPlugin\vendor\Psr\Log\InvalidArgumentException
+     */
+    abstract public function log($level, string|\Stringable $message, array $context = []): void;
 }

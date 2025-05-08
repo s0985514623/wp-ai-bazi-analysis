@@ -9,23 +9,26 @@ use R2WpBaziPlugin\vendor\OpenAI\Contracts\StringableContract;
 /**
  * @internal
  */
-final class ApiKey implements StringableContract {
+final class ApiKey implements StringableContract
+{
+    /**
+     * Creates a new API token value object.
+     */
+    private function __construct(public readonly string $apiKey)
+    {
+        // ..
+    }
 
-	/**
-	 * Creates a new API token value object.
-	 */
-	private function __construct( public readonly string $apiKey ) {
-		// ..
-	}
+    public static function from(string $apiKey): self
+    {
+        return new self($apiKey);
+    }
 
-	public static function from( string $apiKey ): self {
-		return new self($apiKey);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function toString(): string {
-		return $this->apiKey;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function toString(): string
+    {
+        return $this->apiKey;
+    }
 }

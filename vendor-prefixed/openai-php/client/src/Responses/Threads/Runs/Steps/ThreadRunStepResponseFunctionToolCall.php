@@ -11,45 +11,47 @@ use R2WpBaziPlugin\vendor\OpenAI\Testing\Responses\Concerns\Fakeable;
 /**
  * @implements ResponseContract<array{id: ?string, type: 'function', function: array{name: ?string, arguments: string, output: ?string}}>
  */
-final class ThreadRunStepResponseFunctionToolCall implements ResponseContract {
+final class ThreadRunStepResponseFunctionToolCall implements ResponseContract
+{
+    /**
+     * @use ArrayAccessible<array{id: ?string, type: 'function', function: array{name: ?string, arguments: string, output: ?string}}>
+     */
+    use ArrayAccessible;
 
-	/**
-	 * @use ArrayAccessible<array{id: ?string, type: 'function', function: array{name: ?string, arguments: string, output: ?string}}>
-	 */
-	use ArrayAccessible;
+    use Fakeable;
 
-	use Fakeable;
+    /**
+     * @param  'function'  $type
+     */
+    private function __construct(
+        public ?string $id,
+        public string $type,
+        public ThreadRunStepResponseFunction $function,
+    ) {}
 
-	/**
-	 * @param  'function' $type
-	 */
-	private function __construct(
-		public ?string $id,
-		public string $type,
-		public ThreadRunStepResponseFunction $function,
-	) {}
+    /**
+     * Acts as static factory, and returns a new Response instance.
+     *
+     * @param  array{id?: string, type: 'function', function: array{name?: string, arguments: string, output?: ?string}}  $attributes
+     */
+    public static function from(array $attributes): self
+    {
+        return new self(
+            $attributes['id'] ?? null,
+            $attributes['type'],
+            ThreadRunStepResponseFunction::from($attributes['function']),
+        );
+    }
 
-	/**
-	 * Acts as static factory, and returns a new Response instance.
-	 *
-	 * @param  array{id?: string, type: 'function', function: array{name?: string, arguments: string, output?: ?string}} $attributes
-	 */
-	public static function from( array $attributes ): self {
-		return new self(
-			$attributes['id'] ?? null,
-			$attributes['type'],
-			ThreadRunStepResponseFunction::from($attributes['function']),
-		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array {
-		return [
-			'id'       => $this->id,
-			'type'     => $this->type,
-			'function' => $this->function->toArray(),
-		];
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'type' => $this->type,
+            'function' => $this->function->toArray(),
+        ];
+    }
 }

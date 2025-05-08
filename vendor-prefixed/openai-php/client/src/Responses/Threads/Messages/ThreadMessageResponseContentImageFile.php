@@ -11,42 +11,41 @@ use R2WpBaziPlugin\vendor\OpenAI\Testing\Responses\Concerns\Fakeable;
 /**
  * @implements ResponseContract<array{file_id: string, detail?: string}>
  */
-final class ThreadMessageResponseContentImageFile implements ResponseContract {
+final class ThreadMessageResponseContentImageFile implements ResponseContract
+{
+    /**
+     * @use ArrayAccessible<array{file_id: string, detail?: string}>
+     */
+    use ArrayAccessible;
 
-	/**
-	 * @use ArrayAccessible<array{file_id: string, detail?: string}>
-	 */
-	use ArrayAccessible;
+    use Fakeable;
 
-	use Fakeable;
+    private function __construct(
+        public string $fileId,
+        public ?string $detail,
+    ) {}
 
-	private function __construct(
-		public string $fileId,
-		public ?string $detail,
-	) {}
+    /**
+     * Acts as static factory, and returns a new Response instance.
+     *
+     * @param  array{file_id: string, detail?: string}  $attributes
+     */
+    public static function from(array $attributes): self
+    {
+        return new self(
+            $attributes['file_id'],
+            $attributes['detail'] ?? null,
+        );
+    }
 
-	/**
-	 * Acts as static factory, and returns a new Response instance.
-	 *
-	 * @param  array{file_id: string, detail?: string} $attributes
-	 */
-	public static function from( array $attributes ): self {
-		return new self(
-			$attributes['file_id'],
-			$attributes['detail'] ?? null,
-		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array {
-		return array_filter(
-			[
-				'file_id' => $this->fileId,
-				'detail'  => $this->detail,
-			],
-			fn ( ?string $value ): bool => $value !== null
-			);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public function toArray(): array
+    {
+        return array_filter([
+            'file_id' => $this->fileId,
+            'detail' => $this->detail,
+        ], fn (?string $value): bool => $value !== null);
+    }
 }

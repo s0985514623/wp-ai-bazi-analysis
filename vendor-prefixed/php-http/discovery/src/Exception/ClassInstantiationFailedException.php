@@ -9,6 +9,6 @@ use R2WpBaziPlugin\vendor\Http\Discovery\Exception;
  *
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-final class ClassInstantiationFailedException extends \RuntimeException implements Exception {
-
+final class ClassInstantiationFailedException extends \RuntimeException implements Exception
+{
 }

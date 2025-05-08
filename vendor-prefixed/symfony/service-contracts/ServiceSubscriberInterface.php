@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Contracts\Service;
 
@@ -28,35 +28,35 @@ use R2WpBaziPlugin\vendor\Symfony\Contracts\Service\Attribute\SubscribedService;
  *
  * @author Nicolas Grekas <p@tchwork.com>
  */
-interface ServiceSubscriberInterface {
-
-	/**
-	 * Returns an array of service types (or {@see SubscribedService} objects) required
-	 * by such instances, optionally keyed by the service names used internally.
-	 *
-	 * For mandatory dependencies:
-	 *
-	 *  * ['logger' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] means the objects use the "logger" name
-	 *    internally to fetch a service which must implement Psr\Log\LoggerInterface.
-	 *  * ['loggers' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface[]'] means the objects use the "loggers" name
-	 *    internally to fetch an iterable of Psr\Log\LoggerInterface instances.
-	 *  * ['R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] is a shortcut for
-	 *  * ['R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface']
-	 *
-	 * otherwise:
-	 *
-	 *  * ['logger' => '?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] denotes an optional dependency
-	 *  * ['loggers' => '?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface[]'] denotes an optional iterable dependency
-	 *  * ['?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] is a shortcut for
-	 *  * ['R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface' => '?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface']
-	 *
-	 * additionally, an array of {@see SubscribedService}'s can be returned:
-	 *
-	 *  * [new SubscribedService('logger', R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface::class)]
-	 *  * [new SubscribedService(type: R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface::class, nullable: true)]
-	 *  * [new SubscribedService('http_client', HttpClientInterface::class, attributes: new Target('githubApi'))]
-	 *
-	 * @return string[]|SubscribedService[] The required service types, optionally keyed by service names
-	 */
-	public static function getSubscribedServices(): array;
+interface ServiceSubscriberInterface
+{
+    /**
+     * Returns an array of service types (or {@see SubscribedService} objects) required
+     * by such instances, optionally keyed by the service names used internally.
+     *
+     * For mandatory dependencies:
+     *
+     *  * ['logger' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] means the objects use the "logger" name
+     *    internally to fetch a service which must implement Psr\Log\LoggerInterface.
+     *  * ['loggers' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface[]'] means the objects use the "loggers" name
+     *    internally to fetch an iterable of Psr\Log\LoggerInterface instances.
+     *  * ['R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] is a shortcut for
+     *  * ['R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface' => 'R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface']
+     *
+     * otherwise:
+     *
+     *  * ['logger' => '?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] denotes an optional dependency
+     *  * ['loggers' => '?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface[]'] denotes an optional iterable dependency
+     *  * ['?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface'] is a shortcut for
+     *  * ['R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface' => '?R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface']
+     *
+     * additionally, an array of {@see SubscribedService}'s can be returned:
+     *
+     *  * [new SubscribedService('logger', R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface::class)]
+     *  * [new SubscribedService(type: R2WpBaziPlugin\vendor\Psr\Log\LoggerInterface::class, nullable: true)]
+     *  * [new SubscribedService('http_client', HttpClientInterface::class, attributes: new Target('githubApi'))]
+     *
+     * @return string[]|SubscribedService[] The required service types, optionally keyed by service names
+     */
+    public static function getSubscribedServices(): array;
 }

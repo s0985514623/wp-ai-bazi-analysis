@@ -10,35 +10,42 @@ use R2WpBaziPlugin\vendor\OpenAI\Responses\FineTunes\RetrieveResponse;
 use R2WpBaziPlugin\vendor\OpenAI\Responses\StreamResponse;
 use R2WpBaziPlugin\vendor\OpenAI\Testing\Resources\Concerns\Testable;
 
-final class FineTunesTestResource implements FineTunesContract {
+final class FineTunesTestResource implements FineTunesContract
+{
+    use Testable;
 
-	use Testable;
+    protected function resource(): string
+    {
+        return FineTunes::class;
+    }
 
-	protected function resource(): string {
-		return FineTunes::class;
-	}
+    public function create(array $parameters): RetrieveResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 
-	public function create( array $parameters ): RetrieveResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
+    public function list(): ListResponse
+    {
+        return $this->record(__FUNCTION__);
+    }
 
-	public function list(): ListResponse {
-		return $this->record(__FUNCTION__);
-	}
+    public function retrieve(string $fineTuneId): RetrieveResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 
-	public function retrieve( string $fineTuneId ): RetrieveResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
+    public function cancel(string $fineTuneId): RetrieveResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 
-	public function cancel( string $fineTuneId ): RetrieveResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
+    public function listEvents(string $fineTuneId): ListEventsResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 
-	public function listEvents( string $fineTuneId ): ListEventsResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
-
-	public function listEventsStreamed( string $fineTuneId ): StreamResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
+    public function listEventsStreamed(string $fineTuneId): StreamResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 }

@@ -9,23 +9,27 @@ use R2WpBaziPlugin\vendor\OpenAI\Responses\Images\EditResponse;
 use R2WpBaziPlugin\vendor\OpenAI\Responses\Images\VariationResponse;
 use R2WpBaziPlugin\vendor\OpenAI\Testing\Resources\Concerns\Testable;
 
-final class ImagesTestResource implements ImagesContract {
+final class ImagesTestResource implements ImagesContract
+{
+    use Testable;
 
-	use Testable;
+    protected function resource(): string
+    {
+        return Images::class;
+    }
 
-	protected function resource(): string {
-		return Images::class;
-	}
+    public function create(array $parameters): CreateResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 
-	public function create( array $parameters ): CreateResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
+    public function edit(array $parameters): EditResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 
-	public function edit( array $parameters ): EditResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
-
-	public function variation( array $parameters ): VariationResponse {
-		return $this->record(__FUNCTION__, func_get_args());
-	}
+    public function variation(array $parameters): VariationResponse
+    {
+        return $this->record(__FUNCTION__, func_get_args());
+    }
 }

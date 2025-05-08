@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Internal;
 
@@ -23,120 +23,125 @@ use R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Exception\TransportExcept
  *
  * @internal
  */
-class AmpBody implements RequestBody, InputStream {
+class AmpBody implements RequestBody, InputStream
+{
+    private ResourceInputStream|\Closure|string $body;
+    private array $info;
+    private \Closure $onProgress;
+    private ?int $offset = 0;
+    private int $length = -1;
+    private ?int $uploaded = null;
 
-	private ResourceInputStream|\Closure|string $body;
-	private array $info;
-	private \Closure $onProgress;
-	private ?int $offset   = 0;
-	private int $length    = -1;
-	private ?int $uploaded = null;
+    /**
+     * @param \Closure|resource|string $body
+     */
+    public function __construct($body, &$info, \Closure $onProgress)
+    {
+        $this->info = &$info;
+        $this->onProgress = $onProgress;
 
-	/**
-	 * @param \Closure|resource|string $body
-	 */
-	public function __construct( $body, &$info, \Closure $onProgress ) {
-		$this->info       = &$info;
-		$this->onProgress = $onProgress;
+        if (\is_resource($body)) {
+            $this->offset = ftell($body);
+            $this->length = fstat($body)['size'];
+            $this->body = new ResourceInputStream($body);
+        } elseif (\is_string($body)) {
+            $this->length = \strlen($body);
+            $this->body = $body;
+        } else {
+            $this->body = $body;
+        }
+    }
 
-		if (\is_resource($body)) {
-			$this->offset = ftell($body);
-			$this->length = fstat($body)['size'];
-			$this->body   = new ResourceInputStream($body);
-		} elseif (\is_string($body)) {
-			$this->length = \strlen($body);
-			$this->body   = $body;
-		} else {
-			$this->body = $body;
-		}
-	}
+    public function createBodyStream(): InputStream
+    {
+        if (null !== $this->uploaded) {
+            $this->uploaded = null;
 
-	public function createBodyStream(): InputStream {
-		if (null !== $this->uploaded) {
-			$this->uploaded = null;
+            if (\is_string($this->body)) {
+                $this->offset = 0;
+            } elseif ($this->body instanceof ResourceInputStream) {
+                fseek($this->body->getResource(), $this->offset);
+            }
+        }
 
-			if (\is_string($this->body)) {
-				$this->offset = 0;
-			} elseif ($this->body instanceof ResourceInputStream) {
-				fseek($this->body->getResource(), $this->offset);
-			}
-		}
+        return $this;
+    }
 
-		return $this;
-	}
+    public function getHeaders(): Promise
+    {
+        return new Success([]);
+    }
 
-	public function getHeaders(): Promise {
-		return new Success([]);
-	}
+    public function getBodyLength(): Promise
+    {
+        return new Success($this->length - $this->offset);
+    }
 
-	public function getBodyLength(): Promise {
-		return new Success($this->length - $this->offset);
-	}
+    public function read(): Promise
+    {
+        $this->info['size_upload'] += $this->uploaded;
+        $this->uploaded = 0;
+        ($this->onProgress)();
 
-	public function read(): Promise {
-		$this->info['size_upload'] += $this->uploaded;
-		$this->uploaded             = 0;
-		( $this->onProgress )();
+        $chunk = $this->doRead();
+        $chunk->onResolve(function ($e, $data) {
+            if (null !== $data) {
+                $this->uploaded = \strlen($data);
+            } else {
+                $this->info['upload_content_length'] = $this->info['size_upload'];
+            }
+        });
 
-		$chunk = $this->doRead();
-		$chunk->onResolve(
-			function ( $e, $data ) {
-				if (null !== $data) {
-					$this->uploaded = \strlen($data);
-				} else {
-					$this->info['upload_content_length'] = $this->info['size_upload'];
-				}
-			}
-			);
+        return $chunk;
+    }
 
-		return $chunk;
-	}
+    public static function rewind(RequestBody $body): RequestBody
+    {
+        if (!$body instanceof self) {
+            return $body;
+        }
 
-	public static function rewind( RequestBody $body ): RequestBody {
-		if (!$body instanceof self) {
-			return $body;
-		}
+        $body->uploaded = null;
 
-		$body->uploaded = null;
+        if ($body->body instanceof ResourceInputStream) {
+            fseek($body->body->getResource(), $body->offset);
 
-		if ($body->body instanceof ResourceInputStream) {
-			fseek($body->body->getResource(), $body->offset);
+            return new $body($body->body, $body->info, $body->onProgress);
+        }
 
-			return new $body($body->body, $body->info, $body->onProgress);
-		}
+        if (\is_string($body->body)) {
+            $body->offset = 0;
+        }
 
-		if (\is_string($body->body)) {
-			$body->offset = 0;
-		}
+        return $body;
+    }
 
-		return $body;
-	}
+    private function doRead(): Promise
+    {
+        if ($this->body instanceof ResourceInputStream) {
+            return $this->body->read();
+        }
 
-	private function doRead(): Promise {
-		if ($this->body instanceof ResourceInputStream) {
-			return $this->body->read();
-		}
+        if (null === $this->offset || !$this->length) {
+            return new Success();
+        }
 
-		if (null === $this->offset || !$this->length) {
-			return new Success();
-		}
+        if (\is_string($this->body)) {
+            $this->offset = null;
 
-		if (\is_string($this->body)) {
-			$this->offset = null;
+            return new Success($this->body);
+        }
 
-			return new Success($this->body);
-		}
+        if ('' === $data = ($this->body)(16372)) {
+            $this->offset = null;
 
-		if ('' === $data = ( $this->body )(16372)) {
-			$this->offset = null;
+            return new Success();
+        }
 
-			return new Success();
-		}
+        if (!\is_string($data)) {
+            throw new TransportException(sprintf('Return value of the "body" option callback must be string, "%s" returned.', get_debug_type($data)));
+        }
 
-		if (!\is_string($data)) {
-			throw new TransportException(sprintf('Return value of the "body" option callback must be string, "%s" returned.', get_debug_type($data)));
-		}
-
-		return new Success($data);
-	}
+        return new Success($data);
+    }
 }

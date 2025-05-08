@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Internal;
 
@@ -18,24 +18,26 @@ namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Internal;
  *
  * @internal
  */
-final class NativeClientState extends ClientState {
+final class NativeClientState extends ClientState
+{
+    public int $id;
+    public int $maxHostConnections = \PHP_INT_MAX;
+    public int $responseCount = 0;
+    /** @var string[] */
+    public array $dnsCache = [];
+    public bool $sleep = false;
+    /** @var int[] */
+    public array $hosts = [];
 
-	public int $id;
-	public int $maxHostConnections = \PHP_INT_MAX;
-	public int $responseCount      = 0;
-	/** @var string[] */
-	public array $dnsCache = [];
-	public bool $sleep     = false;
-	/** @var int[] */
-	public array $hosts = [];
+    public function __construct()
+    {
+        $this->id = random_int(\PHP_INT_MIN, \PHP_INT_MAX);
+    }
 
-	public function __construct() {
-		$this->id = random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-	}
-
-	public function reset(): void {
-		$this->responseCount = 0;
-		$this->dnsCache      = [];
-		$this->hosts         = [];
-	}
+    public function reset(): void
+    {
+        $this->responseCount = 0;
+        $this->dnsCache = [];
+        $this->hosts = [];
+    }
 }

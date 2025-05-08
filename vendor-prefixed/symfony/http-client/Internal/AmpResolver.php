@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Internal;
 
@@ -23,39 +23,42 @@ use Amp\Success;
  *
  * @internal
  */
-class AmpResolver implements Dns\Resolver {
+class AmpResolver implements Dns\Resolver
+{
+    private array $dnsMap;
 
-	private array $dnsMap;
+    public function __construct(array &$dnsMap)
+    {
+        $this->dnsMap = &$dnsMap;
+    }
 
-	public function __construct( array &$dnsMap ) {
-		$this->dnsMap = &$dnsMap;
-	}
+    public function resolve(string $name, ?int $typeRestriction = null): Promise
+    {
+        $recordType = Record::A;
+        $ip = $this->dnsMap[$name] ?? null;
 
-	public function resolve( string $name, ?int $typeRestriction = null ): Promise {
-		$recordType = Record::A;
-		$ip         = $this->dnsMap[ $name ] ?? null;
+        if (null !== $ip && str_contains($ip, ':')) {
+            $recordType = Record::AAAA;
+        }
+        if (null === $ip || $recordType !== ($typeRestriction ?? $recordType)) {
+            return Dns\resolver()->resolve($name, $typeRestriction);
+        }
 
-		if (null !== $ip && str_contains($ip, ':')) {
-			$recordType = Record::AAAA;
-		}
-		if (null === $ip || $recordType !== ( $typeRestriction ?? $recordType )) {
-			return Dns\resolver()->resolve($name, $typeRestriction);
-		}
+        return new Success([new Record($ip, $recordType, null)]);
+    }
 
-		return new Success([ new Record($ip, $recordType, null) ]);
-	}
+    public function query(string $name, int $type): Promise
+    {
+        $recordType = Record::A;
+        $ip = $this->dnsMap[$name] ?? null;
 
-	public function query( string $name, int $type ): Promise {
-		$recordType = Record::A;
-		$ip         = $this->dnsMap[ $name ] ?? null;
+        if (null !== $ip && str_contains($ip, ':')) {
+            $recordType = Record::AAAA;
+        }
+        if (null === $ip || $recordType !== $type) {
+            return Dns\resolver()->query($name, $type);
+        }
 
-		if (null !== $ip && str_contains($ip, ':')) {
-			$recordType = Record::AAAA;
-		}
-		if (null === $ip || $recordType !== $type) {
-			return Dns\resolver()->query($name, $type);
-		}
-
-		return new Success([ new Record($ip, $recordType, null) ]);
-	}
+        return new Success([new Record($ip, $recordType, null)]);
+    }
 }

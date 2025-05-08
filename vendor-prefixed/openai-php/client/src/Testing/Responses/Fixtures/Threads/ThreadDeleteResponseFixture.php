@@ -2,11 +2,11 @@
 
 namespace R2WpBaziPlugin\vendor\OpenAI\Testing\Responses\Fixtures\Threads;
 
-final class ThreadDeleteResponseFixture {
-
-	public const ATTRIBUTES = [
-		'id'      => 'thread_agvtHUGezjTCt4SKgQg0NJ2Y',
-		'object'  => 'thread.deleted',
-		'deleted' => true,
-	];
+final class ThreadDeleteResponseFixture
+{
+    public const ATTRIBUTES = [
+        'id' => 'thread_agvtHUGezjTCt4SKgQg0NJ2Y',
+        'object' => 'thread.deleted',
+        'deleted' => true,
+    ];
 }

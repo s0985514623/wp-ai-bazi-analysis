@@ -7,6 +7,6 @@ namespace R2WpBaziPlugin\vendor\Http\Discovery\Exception;
  *
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-final class PuliUnavailableException extends StrategyUnavailableException {
-
+final class PuliUnavailableException extends StrategyUnavailableException
+{
 }

@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient\Exception;
 
@@ -18,7 +18,7 @@ use R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient\ResponseInterface;
  *
  * @author Anton Chernikov <anton_ch1989@mail.ru>
  */
-interface HttpExceptionInterface extends ExceptionInterface {
-
-	public function getResponse(): ResponseInterface;
+interface HttpExceptionInterface extends ExceptionInterface
+{
+    public function getResponse(): ResponseInterface;
 }

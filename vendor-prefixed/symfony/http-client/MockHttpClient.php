@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient;
 
@@ -24,86 +24,93 @@ use R2WpBaziPlugin\vendor\Symfony\Contracts\Service\ResetInterface;
  *
  * @author Nicolas Grekas <p@tchwork.com>
  */
-class MockHttpClient implements HttpClientInterface, ResetInterface {
+class MockHttpClient implements HttpClientInterface, ResetInterface
+{
+    use HttpClientTrait;
 
-	use HttpClientTrait;
+    private ResponseInterface|\Closure|iterable|null $responseFactory;
+    private int $requestsCount = 0;
+    private array $defaultOptions = [];
 
-	private ResponseInterface|\Closure|iterable|null $responseFactory;
-	private int $requestsCount    = 0;
-	private array $defaultOptions = [];
+    /**
+     * @param callable|callable[]|ResponseInterface|ResponseInterface[]|iterable|null $responseFactory
+     */
+    public function __construct(callable|iterable|ResponseInterface|null $responseFactory = null, ?string $baseUri = 'https://example.com')
+    {
+        $this->setResponseFactory($responseFactory);
+        $this->defaultOptions['base_uri'] = $baseUri;
+    }
 
-	/**
-	 * @param callable|callable[]|ResponseInterface|ResponseInterface[]|iterable|null $responseFactory
-	 */
-	public function __construct( callable|iterable|ResponseInterface|null $responseFactory = null, ?string $baseUri = 'https://example.com' ) {
-		$this->setResponseFactory($responseFactory);
-		$this->defaultOptions['base_uri'] = $baseUri;
-	}
+    /**
+     * @param callable|callable[]|ResponseInterface|ResponseInterface[]|iterable|null $responseFactory
+     */
+    public function setResponseFactory($responseFactory): void
+    {
+        if ($responseFactory instanceof ResponseInterface) {
+            $responseFactory = [$responseFactory];
+        }
 
-	/**
-	 * @param callable|callable[]|ResponseInterface|ResponseInterface[]|iterable|null $responseFactory
-	 */
-	public function setResponseFactory( $responseFactory ): void {
-		if ($responseFactory instanceof ResponseInterface) {
-			$responseFactory = [ $responseFactory ];
-		}
+        if (!$responseFactory instanceof \Iterator && null !== $responseFactory && !\is_callable($responseFactory)) {
+            $responseFactory = (static function () use ($responseFactory) {
+                yield from $responseFactory;
+            })();
+        }
 
-		if (!$responseFactory instanceof \Iterator && null !== $responseFactory && !\is_callable($responseFactory)) {
-			$responseFactory = ( static function () use ( $responseFactory ) {
-				yield from $responseFactory;
-			} )();
-		}
+        $this->responseFactory = !\is_callable($responseFactory) ? $responseFactory : $responseFactory(...);
+    }
 
-		$this->responseFactory = !\is_callable($responseFactory) ? $responseFactory : $responseFactory(...);
-	}
+    public function request(string $method, string $url, array $options = []): ResponseInterface
+    {
+        [$url, $options] = $this->prepareRequest($method, $url, $options, $this->defaultOptions, true);
+        $url = implode('', $url);
 
-	public function request( string $method, string $url, array $options = [] ): ResponseInterface {
-		[$url, $options] = $this->prepareRequest($method, $url, $options, $this->defaultOptions, true);
-		$url             = implode('', $url);
+        if (null === $this->responseFactory) {
+            $response = new MockResponse();
+        } elseif (\is_callable($this->responseFactory)) {
+            $response = ($this->responseFactory)($method, $url, $options);
+        } elseif (!$this->responseFactory->valid()) {
+            throw new TransportException($this->requestsCount ? 'No more response left in the response factory iterator passed to MockHttpClient: the number of requests exceeds the number of responses.' : 'The response factory iterator passed to MockHttpClient is empty.');
+        } else {
+            $responseFactory = $this->responseFactory->current();
+            $response = \is_callable($responseFactory) ? $responseFactory($method, $url, $options) : $responseFactory;
+            $this->responseFactory->next();
+        }
+        ++$this->requestsCount;
 
-		if (null === $this->responseFactory) {
-			$response = new MockResponse();
-		} elseif (\is_callable($this->responseFactory)) {
-			$response = ( $this->responseFactory )($method, $url, $options);
-		} elseif (!$this->responseFactory->valid()) {
-			throw new TransportException($this->requestsCount ? 'No more response left in the response factory iterator passed to MockHttpClient: the number of requests exceeds the number of responses.' : 'The response factory iterator passed to MockHttpClient is empty.');
-		} else {
-			$responseFactory = $this->responseFactory->current();
-			$response        = \is_callable($responseFactory) ? $responseFactory($method, $url, $options) : $responseFactory;
-			$this->responseFactory->next();
-		}
-		++$this->requestsCount;
+        if (!$response instanceof ResponseInterface) {
+            throw new TransportException(sprintf('The response factory passed to MockHttpClient must return/yield an instance of ResponseInterface, "%s" given.', get_debug_type($response)));
+        }
 
-		if (!$response instanceof ResponseInterface) {
-			throw new TransportException(sprintf('The response factory passed to MockHttpClient must return/yield an instance of ResponseInterface, "%s" given.', get_debug_type($response)));
-		}
+        return MockResponse::fromRequest($method, $url, $options, $response);
+    }
 
-		return MockResponse::fromRequest($method, $url, $options, $response);
-	}
+    public function stream(ResponseInterface|iterable $responses, ?float $timeout = null): ResponseStreamInterface
+    {
+        if ($responses instanceof ResponseInterface) {
+            $responses = [$responses];
+        }
 
-	public function stream( ResponseInterface|iterable $responses, ?float $timeout = null ): ResponseStreamInterface {
-		if ($responses instanceof ResponseInterface) {
-			$responses = [ $responses ];
-		}
+        return new ResponseStream(MockResponse::stream($responses, $timeout));
+    }
 
-		return new ResponseStream(MockResponse::stream($responses, $timeout));
-	}
+    public function getRequestsCount(): int
+    {
+        return $this->requestsCount;
+    }
 
-	public function getRequestsCount(): int {
-		return $this->requestsCount;
-	}
+    public function withOptions(array $options): static
+    {
+        $clone = clone $this;
+        $clone->defaultOptions = self::mergeDefaultOptions($options, $this->defaultOptions, true);
 
-	public function withOptions( array $options ): static {
-		$clone                 = clone $this;
-		$clone->defaultOptions = self::mergeDefaultOptions($options, $this->defaultOptions, true);
+        return $clone;
+    }
 
-		return $clone;
-	}
-
-	/**
-	 * @return void
-	 */
-	public function reset() {
-		$this->requestsCount = 0;
-	}
+    /**
+     * @return void
+     */
+    public function reset()
+    {
+        $this->requestsCount = 0;
+    }
 }

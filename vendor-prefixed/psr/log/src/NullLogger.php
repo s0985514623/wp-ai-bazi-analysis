@@ -10,16 +10,17 @@ namespace R2WpBaziPlugin\vendor\Psr\Log;
  * is a good way to avoid littering your code with `if ($this->logger) { }`
  * blocks.
  */
-class NullLogger extends AbstractLogger {
-
-	/**
-	 * Logs with an arbitrary level.
-	 *
-	 * @param mixed[] $context
-	 *
-	 * @throws \R2WpBaziPlugin\vendor\Psr\Log\InvalidArgumentException
-	 */
-	public function log( $level, string|\Stringable $message, array $context = [] ): void {
-		// noop
-	}
+class NullLogger extends AbstractLogger
+{
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed[] $context
+     *
+     * @throws \R2WpBaziPlugin\vendor\Psr\Log\InvalidArgumentException
+     */
+    public function log($level, string|\Stringable $message, array $context = []): void
+    {
+        // noop
+    }
 }

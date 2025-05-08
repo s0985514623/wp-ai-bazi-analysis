@@ -1,13 +1,13 @@
 <?php
 
 /*
-* This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace R2WpBaziPlugin\vendor\Symfony\Component\HttpClient\Retry;
 
@@ -18,19 +18,19 @@ use R2WpBaziPlugin\vendor\Symfony\Contracts\HttpClient\Exception\TransportExcept
  * @author Jérémy Derussé <jeremy@derusse.com>
  * @author Nicolas Grekas <p@tchwork.com>
  */
-interface RetryStrategyInterface {
+interface RetryStrategyInterface
+{
+    /**
+     * Returns whether the request should be retried.
+     *
+     * @param ?string $responseContent Null is passed when the body did not arrive yet
+     *
+     * @return bool|null Returns null to signal that the body is required to take a decision
+     */
+    public function shouldRetry(AsyncContext $context, ?string $responseContent, ?TransportExceptionInterface $exception): ?bool;
 
-	/**
-	 * Returns whether the request should be retried.
-	 *
-	 * @param ?string $responseContent Null is passed when the body did not arrive yet
-	 *
-	 * @return bool|null Returns null to signal that the body is required to take a decision
-	 */
-	public function shouldRetry( AsyncContext $context, ?string $responseContent, ?TransportExceptionInterface $exception ): ?bool;
-
-	/**
-	 * Returns the time to wait in milliseconds.
-	 */
-	public function getDelay( AsyncContext $context, ?string $responseContent, ?TransportExceptionInterface $exception ): int;
+    /**
+     * Returns the time to wait in milliseconds.
+     */
+    public function getDelay(AsyncContext $context, ?string $responseContent, ?TransportExceptionInterface $exception): int;
 }

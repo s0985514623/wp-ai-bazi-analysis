@@ -12,22 +12,23 @@ use R2WpBaziPlugin\vendor\Http\Discovery\Exception\DiscoveryFailedException;
  *
  * @deprecated This will be removed in 2.0. Consider using Psr18ClientDiscovery.
  */
-final class HttpClientDiscovery extends ClassDiscovery {
+final class HttpClientDiscovery extends ClassDiscovery
+{
+    /**
+     * Finds an HTTP Client.
+     *
+     * @return HttpClient
+     *
+     * @throws Exception\NotFoundException
+     */
+    public static function find()
+    {
+        try {
+            $client = static::findOneByType(HttpClient::class);
+        } catch (DiscoveryFailedException $e) {
+            throw new NotFoundException('No HTTPlug clients found. Make sure to install a package providing "php-http/client-implementation". Example: "php-http/guzzle6-adapter".', 0, $e);
+        }
 
-	/**
-	 * Finds an HTTP Client.
-	 *
-	 * @return HttpClient
-	 *
-	 * @throws Exception\NotFoundException
-	 */
-	public static function find() {
-		try {
-			$client = self::findOneByType(HttpClient::class);
-		} catch (DiscoveryFailedException $e) {
-			throw new NotFoundException('No HTTPlug clients found. Make sure to install a package providing "php-http/client-implementation". Example: "php-http/guzzle6-adapter".', 0, $e);
-		}
-
-		return self::instantiateClass($client);
-	}
+        return static::instantiateClass($client);
+    }
 }
