@@ -18,6 +18,20 @@ class AiChat {
 
 	public function __construct() {
 		\add_action('rest_api_init', [ $this, 'register_routes' ]);
+		\add_action('init', [ $this, 'register_hooks' ]);
+	}
+
+	/**
+	 * 注冊鉤子和回調
+	 */
+	public function register_hooks() {
+		// 注冊頭像生成鉤子，如果提供者是OpenAI
+		$api_settings = ApiSettings::get_api_settings();
+		if ($api_settings['api_provider'] === 'openai') {
+			// 確保客戶端已實例化並注冊鉤子
+			$client = ClientFactory::createClient();
+			\add_action('wp_bazi_generate_avatar', [ $client, 'processAvatarGeneration' ], 10, 1);
+		}
 	}
 
 	public function register_routes() {
@@ -30,6 +44,55 @@ class AiChat {
 				'permission_callback' => '__return_true',
 			]
 		);
+
+		\register_rest_route(
+			'bft/v1',
+			'/check-avatar/(?P<request_id>[a-zA-Z0-9]+)',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ $this, 'check_avatar_status' ],
+				'permission_callback' => '__return_true',
+			]
+		);
+	}
+
+	/**
+	 * 檢查頭像生成狀態
+	 */
+	public function check_avatar_status( $request ) {
+		$request_id = $request->get_param('request_id');
+
+		if (empty($request_id)) {
+			return new \WP_Error('invalid_request', '無效的請求ID', [ 'status' => 400 ]);
+		}
+
+		// 獲取頭像結果
+		$result = \get_option('wp_bazi_avatar_result_' . $request_id);
+
+		if (!$result) {
+			// 檢查狀態
+			$request_data = \get_option('wp_bazi_avatar_request_' . $request_id);
+
+			if (!$request_data) {
+				return new \WP_Error('not_found', '未找到相關請求', [ 'status' => 404 ]);
+			}
+
+			return \rest_ensure_response(
+				[
+					'success'   => true,
+					'status'    => $request_data['status'],
+					'image_url' => '',
+				]
+				);
+		}
+
+		return \rest_ensure_response(
+			[
+				'success'   => true,
+				'status'    => 'completed',
+				'image_url' => $result['image_url'],
+			]
+			);
 	}
 
 	/**

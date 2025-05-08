@@ -51,6 +51,8 @@ export const getDataProviderUrlParams = (dataProvider: TDataProvider) => {
       return 'wc/v3'
     case 'wc-store':
       return 'wc/store/v1'
+    case 'bft':
+      return 'bft/v1'
     default:
       return 'wp/v2'
   }

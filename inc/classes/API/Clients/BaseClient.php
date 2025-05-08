@@ -115,7 +115,7 @@ abstract class BaseClient {
 		$prompt .= "2. 五行分佈（金、木、水、火、土各自的數量）\n";
 		$prompt .= "3. 缺失的五行\n";
 		$prompt .= "4. 偏弱的五行（不缺失但需要補充的五行）\n";
-		$prompt .= "5. 日主及其強弱\n";
+		$prompt .= "5. 日主\n";
 
 		switch ($analysis_type) {
 			case 'general':
@@ -138,6 +138,7 @@ abstract class BaseClient {
 		}
 
 		$prompt .= "7. 五行補充建議（針對缺失或偏弱的五行，提供補充建議，包括顏色、方位、飲食等方面的調整建議）\n\n";
+		$prompt .= "8. 服飾配飾補充建議（針對缺失或偏弱的五行，提供服飾或配飾的調整建議）\n\n";
 
 		$prompt .= "【重要提示】請將以上所有分析結果（1-7點）都統一以JSON格式回覆，不要有任何其他格式的文本說明。你的回應必須是一個有效的JSON對象，包含以下字段：\n";
 		$prompt .= "```json\n";
@@ -152,9 +153,10 @@ abstract class BaseClient {
 		$prompt .= "  \"missingElements\": \"缺失五行\",\n";
 		$prompt .= "  \"weakElements\": \"偏弱五行\",\n";
 		$prompt .= "  \"dayMaster\": \"日主\",\n";
-		$prompt .= "  \"dayMasterStrength\": \"日主強弱程度\",\n";
+		// $prompt .= "  \"dayMasterStrength\": \"日主強弱程度\",\n";
 		$prompt .= "  \"personalityAnalysis\": \"分析內容\",\n";
 		$prompt .= "  \"elementSuggestions\": \"五行補充建議內容\"\n";
+		$prompt .= "  \"clothingSuggestions\": \"服飾配飾補充建議內容\"\n";
 		$prompt .= "}\n";
 		$prompt .= "```\n";
 		$prompt .= '請確保所有分析內容都填入對應的JSON字段，不要在JSON之外提供任何解釋或文本內容。';
@@ -227,6 +229,7 @@ abstract class BaseClient {
 				'weakElements'        => '',
 				'personalityAnalysis' => '',
 				'elementSuggestions'  => '',
+				'clothingSuggestions' => '',
 			],
 			$bazi_data
 		);

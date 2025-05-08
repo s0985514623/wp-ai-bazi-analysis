@@ -44,6 +44,9 @@ type BaziApiResponse = {
     elements: string[];
     url: string;
   }>;
+  qavatarStatus: string;
+  qavatarRequestId: string;
+  qavatarUrl: string;
 }
 
 // BaziResult组件所需的数据格式
@@ -84,6 +87,9 @@ interface ResultData {
     elements: string[];
     url: string;
   }>;
+  qavatarStatus: string;
+  qavatarRequestId: string;
+  qavatarUrl: string;
 }
 
 const BaziPage: React.FC = () => {
@@ -127,7 +133,6 @@ const BaziPage: React.FC = () => {
       }
       
       const apiResponse = await response.json() as BaziApiResponse;
-      console.log('API Response:', apiResponse);
       
       // 确保API响应中包含所需数据
       if (!apiResponse.bazi || !apiResponse.fiveElements) {
@@ -172,7 +177,10 @@ const BaziPage: React.FC = () => {
             image: product.image || 'https://via.placeholder.com/300x200?text=商品圖片',
             elements: Array.isArray(product.elements) ? product.elements : [],
             url: product.url || '#'
-          })) : []
+          })) : [],
+        qavatarStatus: apiResponse.qavatarStatus || '',
+        qavatarRequestId: apiResponse.qavatarRequestId || '',
+        qavatarUrl: apiResponse.qavatarUrl || ''
       };
       
       setResultData(formattedResult);

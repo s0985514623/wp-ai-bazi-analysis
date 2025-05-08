@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/bazi.css';
+import { getResource } from '@/api/resources/get';
 
 interface BaziResultProps {
   resultData: ResultData;
@@ -34,6 +35,9 @@ interface ResultData {
   weakElements: string;
   personalityAnalysis: string;
   elementSuggestions: string;
+  qavatarStatus?: string; // 圖像生成狀態
+  qavatarRequestId?: string; // 圖像請求ID
+  qavatarUrl?: string; // 圖像URL
   products: Array<{
     id: string;
     name: string;
@@ -46,24 +50,113 @@ interface ResultData {
 }
 
 const BaziResult: React.FC<BaziResultProps> = ({ resultData, onBack }) => {
-  const { userInfo, baziChart, elements, dayMaster, missingElements, weakElements, personalityAnalysis, elementSuggestions, products } = resultData;
+  const { userInfo, baziChart, elements, dayMaster, missingElements, weakElements, personalityAnalysis, elementSuggestions, products, qavatarStatus, qavatarRequestId, qavatarUrl } = resultData;
+
+  const [qavatar, setQAvatar] = useState({
+    status: qavatarStatus || 'none',
+    url: qavatarUrl || ''
+  });
+  
+  // 輪詢圖像生成狀態
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    
+    const checkAvatarStatus = async () => {
+      // 只有當狀態是generating且有請求ID時才進行輪詢
+      if (qavatarStatus === 'generating' && qavatarRequestId) {
+        try {
+          const response = await getResource({
+            dataProvider: 'bft',
+            resource: 'check-avatar',
+            pathParams: [qavatarRequestId]
+          });
+          
+          const { status, image_url } = response.data;
+          
+          // 更新狀態
+          setQAvatar({
+            status,
+            url: image_url || ''
+          });
+          
+          // 如果已完成，停止輪詢
+          if (status === 'completed' && image_url) {
+            clearInterval(intervalId);
+          }
+        } catch (error) {
+          console.error('Failed to check avatar status:', error);
+        }
+      }
+    };
+    
+    // 立即檢查一次
+    checkAvatarStatus();
+    
+    // 設置每10秒輪詢一次
+    if (qavatarStatus === 'generating' && qavatarRequestId) {
+      intervalId = setInterval(checkAvatarStatus, 10000);
+    }
+    
+    // 清理函數
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [qavatarStatus, qavatarRequestId]);
+    
   
   return (
     <div className="bazi-result" id="bazi-result" style={{ display: 'block' }}>
       {/* 頂部信息區 */}
       <div className="result-header">
         <h2>命格分析結果</h2>
-        <div className="user-info">
-          <p><span>性別：</span><span id="result-gender">{userInfo.gender}</span></p>
-          <p><span>生辰：</span><span id="result-birth">{userInfo.birthDate}</span></p>
-          <p><span>出生地：</span><span id="result-birthplace">{userInfo.birthPlace}</span></p>
-          <p><span>分析項目：</span><span id="result-analysis-type">{userInfo.analysisType}</span></p>
+        <div className="user-info-container">
+          {/* 左側: Q版人像 */}
+          <div className="qavatar-section">
+            <h3>命格Q版形象</h3>
+            <div className="qavatar-container">
+              {qavatar.status === 'completed' && qavatar.url ? (
+                <img src={qavatar.url} alt="命格Q版形象" className="qavatar-image" />
+              ) : qavatar.status === 'generating' || qavatar.status === 'pending' || qavatar.status === 'processing' ? (
+                <div className="qavatar-loading">
+                  <div className="qavatar-loading-animation"></div>
+                  <p>正在根據您的八字命格生成Q版人像，請稍候...</p>
+                </div>
+              ) : (
+                <div className="qavatar-unavailable">
+                  <p>暫無命格Q版形象</p>
+                </div>
+              )}
+            </div>
+          </div>
+          {/* 右側: 用戶信息 */}
+          <div className="user-info">
+            <p><span>性別：</span><span id="result-gender">{userInfo.gender}</span></p>
+            <p><span>生辰：</span><span id="result-birth">{userInfo.birthDate}</span></p>
+            <p><span>出生地：</span><span id="result-birthplace">{userInfo.birthPlace}</span></p>
+            <p><span>分析項目：</span><span id="result-analysis-type">{userInfo.analysisType}</span></p>
+          </div>
         </div>
       </div>
 
       {/* 核心分析區（兩列布局） */}
       <div className="analysis-grid">
-        {/* 左列：八字盤和五行信息 */}
+
+        {/* 左列：性格分析和五行補充建議 */}
+        <div className="analysis-column" id="extended-analysis">
+          {/* 性格分析區塊 */}
+          <div className="analysis-card personality-analysis">
+            <h3>性格分析</h3>
+            <p>{personalityAnalysis}</p>
+          </div>
+          
+          {/* 五行補充建議區塊 */}
+          <div className="analysis-card element-suggestions">
+            <h3>五行補充建議</h3>
+            <p>{elementSuggestions}</p>
+          </div>
+        </div>
+
+        {/* 右列：八字盤和五行信息 */}
         <div className="analysis-column">
           {/* 八字盤區塊 */}
           <div className="analysis-card bazi-chart">
@@ -147,20 +240,7 @@ const BaziResult: React.FC<BaziResultProps> = ({ resultData, onBack }) => {
           </div>
         </div>
         
-        {/* 右列：性格分析和五行補充建議 */}
-        <div className="analysis-column" id="extended-analysis">
-          {/* 性格分析區塊 */}
-          <div className="analysis-card personality-analysis">
-            <h3>性格分析</h3>
-            <p>{personalityAnalysis}</p>
-          </div>
-          
-          {/* 五行補充建議區塊 */}
-          <div className="analysis-card element-suggestions">
-            <h3>五行補充建議</h3>
-            <p>{elementSuggestions}</p>
-          </div>
-        </div>
+        
       </div>
       
       {/* 相關商品區塊 */}

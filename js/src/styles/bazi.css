@@ -401,16 +401,77 @@ input, select {
   margin: 10px auto;
 }
 
+/* 頂部容器樣式 */
+.user-info-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  align-items: stretch;
+}
+
+/* 用戶信息區域 */
 .user-info {
+  flex: 0.8;
+  min-width: 300px;
   margin-bottom: 20px;
   background-color: var(--card-bg-color);
   padding: 15px;
   border-radius: 8px;
   border-left: 4px solid var(--primary-color);
   box-shadow: var(--card-shadow);
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+}
+
+/* 頂部Q版圖像區域 - 調整樣式 */
+.result-header .qavatar-section {
+  flex: 1.2;
+  min-width: 350px;
+  background-color: var(--card-bg-color);
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+  border-left: 4px solid var(--accent-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-header .qavatar-section h3 {
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--accent-color);
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.result-header .qavatar-container {
+  min-height: 250px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.result-header .qavatar-image {
+  max-height: 280px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s ease;
+}
+
+.result-header .qavatar-image:hover {
+  transform: scale(1.03);
 }
 
 .user-info p {
@@ -776,6 +837,20 @@ input, select {
   .products-container {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
+  
+  /* 中等屏幕的頂部布局調整 */
+  .user-info-container {
+    gap: 20px;
+  }
+  
+  .result-header .qavatar-section {
+    flex: 1;
+    min-width: 320px;
+  }
+  
+  .user-info {
+    flex: 1;
+  }
 }
 
 @media (max-width: 768px) {
@@ -813,6 +888,34 @@ input, select {
   
   .products-container {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  
+  /* 小屏幕的頂部布局調整 */
+  .user-info-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .result-header .qavatar-section {
+    width: 100%;
+    max-width: 400px;
+    min-width: unset;
+    order: -1;  /* 放在用戶信息之前 */
+  }
+  
+  .result-header .qavatar-container {
+    min-height: 280px;
+    max-width: 350px;
+  }
+  
+  .result-header .qavatar-image {
+    max-height: 320px;
+  }
+  
+  .user-info {
+    width: 100%;
+    min-width: unset;
   }
 }
 
@@ -859,4 +962,87 @@ input, select {
   .products-container {
     grid-template-columns: 1fr;
   }
+  
+  /* 超小屏幕下Q版人像調整 */
+  .result-header .qavatar-section {
+    padding: 15px;
+  }
+  
+  .result-header .qavatar-container {
+    min-height: 250px;
+  }
+  
+  .result-header .qavatar-image {
+    max-height: 280px;
+  }
+}
+
+/* 新增 Q版頭像相關樣式 */
+.qavatar-section {
+  margin-bottom: 20px;
+}
+
+.qavatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  width: 100%;
+  position: relative;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.qavatar-image {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.qavatar-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.qavatar-loading p {
+  font-size: 16px;
+  color: #666;
+  max-width: 200px;
+}
+
+.qavatar-loading-animation {
+  width: 80px;
+  height: 80px;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+  margin-bottom: 15px;
+}
+
+.qavatar-unavailable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  width: 100%;
+  color: #888;
+  font-style: italic;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 } 

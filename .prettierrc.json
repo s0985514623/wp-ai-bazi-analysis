@@ -8,7 +8,7 @@
   "tabWidth": 2,
   "trailingComma": "all",
   "useTabs": false,
-  "endOfLine": "auto",
+  "endOfLine": "lf",
   "multilineArraysWrapThreshold": 4,
   "plugins": [
     "eslint-plugin-prettier",
