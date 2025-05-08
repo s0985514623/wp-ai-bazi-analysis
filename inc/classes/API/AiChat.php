@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace R2\WpBaziPlugin\API;
 
 use R2\WpBaziPlugin\Admin\ApiSettings;
+use R2\WpBaziPlugin\API\Clients\ClientFactory;
 
 /**
  * Class AiChat
@@ -28,7 +29,7 @@ class AiChat {
 				'callback'            => [ $this, 'handle_bazi_analysis' ],
 				'permission_callback' => '__return_true',
 			]
-			);
+		);
 	}
 
 	/**
@@ -37,233 +38,39 @@ class AiChat {
 	public function handle_bazi_analysis( $request ) {
 		$data = $request->get_json_params();
 
-		// 使用設置頁面的配置
-		$api_settings = ApiSettings::get_api_settings();
-		$api_key      = $api_settings['api_key'];
-		$api_url      = $api_settings['api_url'];
-		$api_model    = $api_settings['api_model'];
-
-		// 獲取表單數據
-		$gender        = $data['gender'] === 'male' ? '男' : '女';
-		$year          = intval($data['year']);
-		$month         = intval($data['month']);
-		$day           = intval($data['day']);
-		$hour          = $data['hour'];
-		$city          = sanitize_text_field($data['city']);
-		$country       = sanitize_text_field($data['country']);
-		$analysis_type = sanitize_text_field($data['analysis_type']);
-
-		// 獲取中文時辰
-		$chinese_hour = '';
-		if ($hour !== 'unknown') {
-			$chinese_hours = [
-				'子時 (23:00-1:00)',
-				'丑時 (1:00-3:00)',
-				'寅時 (3:00-5:00)',
-				'卯時 (5:00-7:00)',
-				'辰時 (7:00-9:00)',
-				'巳時 (9:00-11:00)',
-				'午時 (11:00-13:00)',
-				'未時 (13:00-15:00)',
-				'申時 (15:00-17:00)',
-				'酉時 (17:00-19:00)',
-				'戌時 (19:00-21:00)',
-				'亥時 (21:00-23:00)',
-			];
-			$chinese_hour  = $chinese_hours[ intval($hour) ];
-		}
-
-		// 構建發送到DeepSeek API的提示
-		$prompt  = "請根據以下八字資料進行命格分析：\n";
-		$prompt .= "性別：{$gender}\n";
-		$prompt .= "生年：{$year}\n";
-		$prompt .= "生月：{$month}\n";
-		$prompt .= "生日：{$day}\n";
-
-		if ($hour !== 'unknown') {
-			$prompt .= "生時：{$chinese_hour}\n";
-		} else {
-			$prompt .= "生時：不詳\n";
-		}
-
-		$prompt .= "出生地：{$city}, {$country}\n";
-		$prompt .= '分析項目：';
-
-		switch ($analysis_type) {
-			case 'general':
-				$prompt .= "總體運勢\n\n";
-				break;
-			case 'love':
-				$prompt .= "感情姻緣\n\n";
-				break;
-			case 'career':
-				$prompt .= "工作事業\n\n";
-				break;
-			case 'wealth':
-				$prompt .= "財運\n\n";
-				break;
-			case 'health':
-				$prompt .= "健康\n\n";
-				break;
-			default:
-				$prompt .= "總體運勢\n\n";
-		}
-
-		$prompt .= "請提供以下信息：\n";
-		$prompt .= '1. 完整的八字（年柱、月柱、日柱、時柱的天干地支）';
-		if ($hour === 'unknown') {
-			$prompt .= "，由於時辰不詳，請根據年月日推算可能的命盤\n";
-		} else {
-			$prompt .= "\n";
-		}
-		$prompt .= "2. 五行分佈（金、木、水、火、土各自的數量）\n";
-		$prompt .= "3. 缺失的五行\n";
-		$prompt .= "4. 偏弱的五行（不缺失但需要補充的五行）\n";
-		$prompt .= "5. 日主及其強弱\n";
-
-		switch ($analysis_type) {
-			case 'general':
-				$prompt .= "6. 整體性格分析與運勢\n";
-				break;
-			case 'love':
-				$prompt .= "6. 感情姻緣方面的詳細分析\n";
-				break;
-			case 'career':
-				$prompt .= "6. 工作事業方面的詳細分析\n";
-				break;
-			case 'wealth':
-				$prompt .= "6. 財運方面的詳細分析\n";
-				break;
-			case 'health':
-				$prompt .= "6. 健康方面的詳細分析\n";
-				break;
-			default:
-				$prompt .= "6. 整體性格分析與運勢\n";
-		}
-
-		$prompt .= "7. 五行補充建議（針對缺失或偏弱的五行，提供補充建議，包括顏色、方位、飲食等方面的調整建議）\n";
-		$prompt .= "8. 格式化為JSON，包含以下字段：\n";
-		$prompt .= "   - bazi: {year: {heavenly: \"天干\", earthly: \"地支\"}, month: {heavenly: \"天干\", earthly: \"地支\"}, day: {heavenly: \"天干\", earthly: \"地支\"}, hour: {heavenly: \"天干\", earthly: \"地支\"}}\n";
-		$prompt .= "   - fiveElements: {metal: 數量, wood: 數量, water: 數量, fire: 數量, earth: 數量}\n";
-		$prompt .= "   - missingElements: \"缺失五行\"\n";
-		$prompt .= "   - weakElements: \"偏弱五行\"\n";
-		$prompt .= "   - dayMaster: \"日主\"\n";
-		// $prompt .= "   - dayMasterStrength: \"強弱程度\"\n";
-		$prompt .= "   - personalityAnalysis: \"分析內容\"\n";
-		$prompt .= "   - elementSuggestions: \"五行補充建議內容\"\n";
-
-		// 準備DeepSeek API請求數據
-		$request_data = [
-			'model'       => $api_model,
-			'messages'    => [
-				[
-					'role'    => 'user',
-					'content' => $prompt,
-				],
-			],
-			'temperature' => $api_settings['temperature'],
-			'max_tokens'  => $api_settings['max_tokens'],
-		];
-		// error log
-		\error_log(print_r($request_data, true));
-		// 發送請求到DeepSeek API
-		$response = \wp_remote_post(
-			$api_url,
-			[
-				'headers' => [
-					'Authorization' => 'Bearer ' . $api_key,
-					'Content-Type'  => 'application/json',
-				],
-				'body'    => json_encode($request_data),
-				'timeout' => 60,
-			]
-			);
-
-		if (is_wp_error($response)) {
-			return new \WP_Error('api_error', 'API請求失敗', [ 'status' => 500 ]);
-		}
-		// error log
-		\error_log(print_r($response, true));
-		$body   = \wp_remote_retrieve_body($response);
-		$result = json_decode($body, true);
-
-		// 處理DeepSeek API返回的結果
 		try {
-			$content = $result['choices'][0]['message']['content'];
+			// 獲取客戶端實例
+			$client = ClientFactory::createClient();
 
-			// 嘗試從返回結果中提取JSON
-			$json_match = preg_match('/```json\n([\s\S]*?)\n```/', $content, $matches) ||
-			preg_match('/```\n([\s\S]*?)\n```/', $content, $matches) ||
-			preg_match('/{[\s\S]*?}/', $content, $matches);
+			// 處理八字分析
+			$response = $client->analyzeBazi($data);
 
-			if ($json_match) {
-				$bazi_data = json_decode(preg_replace('/```json\n|```\n|```/', '', $matches[0]), true);
-
-				// 確保分析結果為字符串格式
-				if (isset($bazi_data['personalityAnalysis']) && is_array($bazi_data['personalityAnalysis'])) {
-					$bazi_data['personalityAnalysis'] = implode("\n", $bazi_data['personalityAnalysis']);
-				}
-
-				if (isset($bazi_data['elementSuggestions']) && is_array($bazi_data['elementSuggestions'])) {
-					$bazi_data['elementSuggestions'] = implode("\n", $bazi_data['elementSuggestions']);
-				}
-
-				// 確保必要字段都存在，即使為空
-				$bazi_data = array_merge(
-					[
-						'bazi'                => [
-							'year'  => [
-								'heavenly' => '',
-								'earthly'  => '',
-							],
-							'month' => [
-								'heavenly' => '',
-								'earthly'  => '',
-							],
-							'day'   => [
-								'heavenly' => '',
-								'earthly'  => '',
-							],
-							'hour'  => [
-								'heavenly' => '',
-								'earthly'  => '',
-							],
-						],
-						'fiveElements'        => [
-							'metal' => 0,
-							'wood'  => 0,
-							'water' => 0,
-							'fire'  => 0,
-							'earth' => 0,
-						],
-						'dayMaster'           => '',
-						'dayMasterStrength'   => '',
-						'missingElements'     => '',
-						'weakElements'        => '',
-						'personalityAnalysis' => '',
-						'elementSuggestions'  => '',
-					],
-					$bazi_data
-					);
-			} else {
-				// 如果沒有找到JSON格式，返回錯誤
-				return new \WP_Error('parse_error', '無法解析分析結果', [ 'status' => 500 ]);
+			// 處理響應
+			if (!$response['success']) {
+				return new \WP_Error(
+					'api_error',
+					$response['error'] ?? '處理API請求時出錯',
+					[ 'status' => $response['code'] ?? 500 ]
+				);
 			}
 
-			// 合併用戶數據和分析結果
-			$response_data = array_merge($data, $bazi_data);
-
-			// 根據缺失和偏弱的五行獲取相關商品
-			$missing_elements = $bazi_data['missingElements'] ?? '';
-			$weak_elements    = $bazi_data['weakElements'] ?? '';
+			// 獲取分析結果
+			$result = $response['data'];
 
 			// 獲取相關商品
-			$related_products                 = $this->get_five_element_products($missing_elements, $weak_elements);
-			$response_data['relatedProducts'] = $related_products;
+			$missing_elements = $result['missingElements'] ?? '';
+			$weak_elements    = $result['weakElements'] ?? '';
 
-			return \rest_ensure_response($response_data);
+			// 添加相關商品到結果
+			$result['relatedProducts'] = $this->get_five_element_products($missing_elements, $weak_elements);
+
+			return \rest_ensure_response($result);
 		} catch (\Exception $e) {
-			return new \WP_Error('parse_error', '處理分析結果時出錯: ' . $e->getMessage(), [ 'status' => 500 ]);
+			return new \WP_Error(
+				'api_client_error',
+				'處理API請求時出錯: ' . $e->getMessage(),
+				[ 'status' => 500 ]
+			);
 		}
 	}
 

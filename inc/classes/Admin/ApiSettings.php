@@ -97,6 +97,14 @@ class ApiSettings {
 		);
 
 		add_settings_field(
+			'api_provider',
+			'API提供者',
+			[ $this, 'render_api_provider_field' ],
+			'wp-bazi-api-settings',
+			'wp_bazi_api_main_section'
+		);
+
+		add_settings_field(
 			'api_model',
 			'API模型',
 			[ $this, 'render_api_model_field' ],
@@ -141,6 +149,10 @@ class ApiSettings {
 
 		if (isset($input['api_url'])) {
 			$output['api_url'] = esc_url_raw($input['api_url']);
+		}
+
+		if (isset($input['api_provider'])) {
+			$output['api_provider'] = sanitize_text_field($input['api_provider']);
 		}
 
 		if (isset($input['api_model'])) {
@@ -198,14 +210,108 @@ class ApiSettings {
 	}
 
 	/**
+	 * 渲染API提供者字段
+	 */
+	public function render_api_provider_field() {
+		$options      = get_option(self::OPTION_NAME);
+		$api_provider = isset($options['api_provider']) ? $options['api_provider'] : 'deepseek';
+		?>
+		<select name="<?php echo self::OPTION_NAME; ?>[api_provider]" id="api_provider" onchange="updateModelOptions()">
+			<option value="deepseek" <?php selected($api_provider, 'deepseek'); ?>>DeepSeek</option>
+			<option value="openai" <?php selected($api_provider, 'openai'); ?>>OpenAI</option>
+		</select>
+		<p class="description">選擇API提供者，影響模型選擇和API格式</p>
+		
+		<script>
+		function updateModelOptions() {
+			const provider = document.getElementById('api_provider').value;
+			const modelSelect = document.getElementById('api_model');
+			const urlInput = document.querySelector('input[name="<?php echo self::OPTION_NAME; ?>[api_url]"]');
+			
+			// 保存當前選中的模型值
+			const currentSelectedModel = modelSelect.value;
+			
+			// 清空現有選項
+			modelSelect.innerHTML = '';
+			
+			if (provider === 'deepseek') {
+				urlInput.value = 'https://api.deepseek.com/chat/completions';
+				
+				const deepseekModels = [
+					{value: 'deepseek-chat', text: 'DeepSeek Chat'},
+					{value: 'deepseek-coder', text: 'DeepSeek Coder'}
+				];
+				
+				deepseekModels.forEach(model => {
+					const option = document.createElement('option');
+					option.value = model.value;
+					option.text = model.text;
+					// 如果是之前選中的模型，設置selected屬性
+					if (currentSelectedModel === model.value) {
+						option.selected = true;
+					}
+					modelSelect.appendChild(option);
+				});
+				
+				// 如果當前選中的不在列表中，選擇默認值
+				if (!deepseekModels.some(model => model.value === currentSelectedModel)) {
+					modelSelect.value = 'deepseek-chat';
+				}
+			} else if (provider === 'openai') {
+				urlInput.value = 'https://api.openai.com/v1/chat/completions';
+				
+				const openaiModels = [
+					{value: 'gpt-3.5-turbo', text: 'GPT-3.5 Turbo'},
+					{value: 'gpt-4', text: 'GPT-4'},
+					{value: 'gpt-4-turbo', text: 'GPT-4 Turbo'},
+					{value: 'gpt-4o', text: 'GPT-4o'}
+				];
+				
+				openaiModels.forEach(model => {
+					const option = document.createElement('option');
+					option.value = model.value;
+					option.text = model.text;
+					// 如果是之前選中的模型，設置selected屬性
+					if (currentSelectedModel === model.value) {
+						option.selected = true;
+					}
+					modelSelect.appendChild(option);
+				});
+				
+				// 如果當前選中的不在列表中，選擇默認值
+				if (!openaiModels.some(model => model.value === currentSelectedModel)) {
+					modelSelect.value = 'gpt-3.5-turbo';
+				}
+			}
+		}
+
+		// 只在切換提供者時執行更新，而不是頁面載入時
+		document.getElementById('api_provider').addEventListener('change', updateModelOptions);
+		</script>
+		<?php
+	}
+
+	/**
 	 * 渲染API模型字段
 	 */
 	public function render_api_model_field() {
-		$options   = get_option(self::OPTION_NAME);
-		$api_model = isset($options['api_model']) ? $options['api_model'] : 'deepseek-chat';
-
-		echo '<input type="text" name="' . self::OPTION_NAME . '[api_model]" value="' . esc_attr($api_model) . '" class="regular-text" />';
-		echo '<p class="description">設置使用的模型名稱，默認為：deepseek-chat</p>';
+		$options      = get_option(self::OPTION_NAME);
+		$api_provider = isset($options['api_provider']) ? $options['api_provider'] : 'deepseek';
+		$api_model    = isset($options['api_model']) ? $options['api_model'] : ( $api_provider === 'deepseek' ? 'deepseek-chat' : 'gpt-3.5-turbo' );
+		?>
+		<select name="<?php echo self::OPTION_NAME; ?>[api_model]" id="api_model">
+		<?php if ($api_provider === 'deepseek' || empty($api_provider)) : ?>
+				<option value="deepseek-chat" <?php selected($api_model, 'deepseek-chat'); ?>>DeepSeek Chat</option>
+				<option value="deepseek-coder" <?php selected($api_model, 'deepseek-coder'); ?>>DeepSeek Coder</option>
+			<?php elseif ($api_provider === 'openai') : ?>
+				<option value="gpt-3.5-turbo" <?php selected($api_model, 'gpt-3.5-turbo'); ?>>GPT-3.5 Turbo</option>
+				<option value="gpt-4" <?php selected($api_model, 'gpt-4'); ?>>GPT-4</option>
+				<option value="gpt-4-turbo" <?php selected($api_model, 'gpt-4-turbo'); ?>>GPT-4 Turbo</option>
+				<option value="gpt-4o" <?php selected($api_model, 'gpt-4o'); ?>>GPT-4o</option>
+			<?php endif; ?>
+		</select>
+		<p class="description">選擇要使用的AI模型</p>
+		<?php
 	}
 
 	/**
@@ -314,11 +420,12 @@ class ApiSettings {
 	 */
 	public static function get_api_settings() {
 		$default_settings = [
-			'api_key'     => 'sk-996a8b520bbb40a191eb9e30e632e22b',
-			'api_url'     => 'https://api.deepseek.com/chat/completions',
-			'api_model'   => 'deepseek-chat',
-			'temperature' => 0.7,
-			'max_tokens'  => 2000,
+			'api_key'      => 'sk-996a8b520bbb40a191eb9e30e632e22b',
+			'api_url'      => 'https://api.deepseek.com/chat/completions',
+			'api_provider' => 'deepseek',
+			'api_model'    => 'deepseek-chat',
+			'temperature'  => 0.7,
+			'max_tokens'   => 2000,
 		];
 
 		$options = get_option(self::OPTION_NAME, []);

@@ -4,3 +4,5 @@
 // @see https://github.com/BrianHenryIE/strauss/
 
 require_once __DIR__ . '/kucrut/vite-for-wp/vite-for-wp.php';
+require_once __DIR__ . '/openai-php/client/src/OpenAI.php';
+require_once __DIR__ . '/symfony/deprecation-contracts/function.php';

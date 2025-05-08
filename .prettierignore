@@ -5,6 +5,7 @@ storybook-static
 **/dist/**
 **/node_modules/**
 **/vendor/**
+**/vendor-prefixed/**
 /.changeset
 /LICENSE
 package-lock.json

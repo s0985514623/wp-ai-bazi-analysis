@@ -26,12 +26,16 @@
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "phpstan/extension-installer": true
+      "phpstan/extension-installer": true,
+      "php-http/discovery": true
     }
   },
   "require": {
     "kucrut/vite-for-wp": "^0.8.0",
-    "j7-dev/wp-utils": "0.2.57"
+    "j7-dev/wp-utils": "0.2.57",
+    "openai-php/client": "^0.10.3",
+    "symfony/http-client": "^6.4",
+    "nyholm/psr7": "^1.8"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "@stable",
