@@ -7,6 +7,17 @@ module.exports = {
 	},
 	content: ['./js/src/**/*.{js,ts,jsx,tsx}', './inc/**/*.php'],
 	theme: {
+		container: {
+			center: true,
+			screens: {
+				sm: '576px',
+				md: '810px',
+				lg: '1080px',
+				xl: '1280px',
+				xxl: '1536px',
+				'2xl': '1920px',
+			},
+		},
 		extend: {
 			colors: {
 				primary: '#1677ff',
@@ -16,7 +27,8 @@ module.exports = {
 				md: '810px', // ipad Portrait
 				lg: '1080px', // ipad Landscape
 				xl: '1280px', // mac air
-				xxl: '1440px',
+				xxl: '1536px',
+				'2xl': '1920px',
 			},
 		},
 	},
