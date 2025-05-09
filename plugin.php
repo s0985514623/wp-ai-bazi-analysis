@@ -3,7 +3,7 @@
  * Plugin Name:       WP AI 八字命格分析 (DEV)
  * Plugin URI:        https://github.com/s0985514623/wp-ai-bazi-analysis
  * Description:       串接AI進行八字命格分析外掛
- * Version:           1.0.6
+ * Version:           1.0.7
  * Requires at least: 5.7
  * Requires PHP:      8.0
  * Author:            Ren
