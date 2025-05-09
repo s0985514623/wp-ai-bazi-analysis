@@ -112,6 +112,38 @@ class ApiSettings {
 			'wp_bazi_api_main_section'
 		);
 
+		// Q版人像相關設置
+		add_settings_section(
+			'wp_bazi_qavatar_section',
+			'命格Q版形象設置',
+			[ $this, 'render_qavatar_section_description' ],
+			'wp-bazi-api-settings'
+		);
+
+		add_settings_field(
+			'enable_qavatar',
+			'啟用命格Q版形象',
+			[ $this, 'render_enable_qavatar_field' ],
+			'wp-bazi-api-settings',
+			'wp_bazi_qavatar_section'
+		);
+
+		add_settings_field(
+			'qavatar_api_key',
+			'圖像API密鑰',
+			[ $this, 'render_qavatar_api_key_field' ],
+			'wp-bazi-api-settings',
+			'wp_bazi_qavatar_section'
+		);
+
+		add_settings_field(
+			'qavatar_model',
+			'圖像生成模型',
+			[ $this, 'render_qavatar_model_field' ],
+			'wp-bazi-api-settings',
+			'wp_bazi_qavatar_section'
+		);
+
 		// 高級設置部分
 		add_settings_section(
 			'wp_bazi_advanced_section',
@@ -157,6 +189,19 @@ class ApiSettings {
 
 		if (isset($input['api_model'])) {
 			$output['api_model'] = sanitize_text_field($input['api_model']);
+		}
+
+		// Q版人像相關設置
+		if (isset($input['enable_qavatar'])) {
+			$output['enable_qavatar'] = sanitize_text_field($input['enable_qavatar']);
+		}
+
+		if (isset($input['qavatar_api_key'])) {
+			$output['qavatar_api_key'] = sanitize_text_field($input['qavatar_api_key']);
+		}
+
+		if (isset($input['qavatar_model'])) {
+			$output['qavatar_model'] = sanitize_text_field($input['qavatar_model']);
 		}
 
 		// 高級設置
@@ -350,6 +395,78 @@ class ApiSettings {
 	}
 
 	/**
+	 * 渲染Q版人像設置區塊說明
+	 */
+	public function render_qavatar_section_description() {
+		echo '<p>設置是否啟用命格Q版形象功能。啟用後將使用AI生成用戶的命格Q版人像。</p>';
+	}
+
+	/**
+	 * 渲染啟用Q版人像選項
+	 */
+	public function render_enable_qavatar_field() {
+		$options        = get_option(self::OPTION_NAME);
+		$enable_qavatar = isset($options['enable_qavatar']) ? $options['enable_qavatar'] : 'no';
+		?>
+		<label>
+			<input type="radio" name="<?php echo self::OPTION_NAME; ?>[enable_qavatar]" value="yes" <?php checked($enable_qavatar, 'yes'); ?> onclick="toggleQAvatarFields(true)" />
+			啟用
+		</label>
+		<label style="margin-left: 15px;">
+			<input type="radio" name="<?php echo self::OPTION_NAME; ?>[enable_qavatar]" value="no" <?php checked($enable_qavatar, 'no'); ?> onclick="toggleQAvatarFields(false)" />
+			停用
+		</label>
+		<p class="description">選擇是否啟用命格Q版人像生成功能</p>
+
+		<script>
+		function toggleQAvatarFields(show) {
+			const qavatar_fields = document.querySelectorAll('.qavatar-dependent-field');
+			qavatar_fields.forEach(field => {
+				field.style.display = show ? 'table-row' : 'none';
+			});
+		}
+
+		// 頁面載入時執行一次
+		document.addEventListener('DOMContentLoaded', function() {
+			const enable_qavatar = document.querySelector('input[name="<?php echo self::OPTION_NAME; ?>[enable_qavatar]"][value="yes"]').checked;
+			toggleQAvatarFields(enable_qavatar);
+		});
+		</script>
+		<?php
+	}
+
+	/**
+	 * 渲染Q版人像API密鑰字段
+	 */
+	public function render_qavatar_api_key_field() {
+		$options         = get_option(self::OPTION_NAME);
+		$qavatar_api_key = isset($options['qavatar_api_key']) ? $options['qavatar_api_key'] : '';
+		?>
+			<div class="qavatar-dependent-field">
+				<input type="text" name="<?php echo self::OPTION_NAME; ?>[qavatar_api_key]" value="<?php echo esc_attr($qavatar_api_key); ?>" class="regular-text" />
+				<p class="description">輸入用於圖像生成的API密鑰（可與上方API密鑰相同或不同）</p>
+			</div>
+		<?php
+	}
+
+	/**
+	 * 渲染Q版人像模型字段
+	 */
+	public function render_qavatar_model_field() {
+		$options       = get_option(self::OPTION_NAME);
+		$qavatar_model = isset($options['qavatar_model']) ? $options['qavatar_model'] : 'gpt-image-1';
+		?>
+		<div class="qavatar-dependent-field">
+			<select name="<?php echo self::OPTION_NAME; ?>[qavatar_model]">
+				<option value="gpt-image-1" <?php selected($qavatar_model, 'gpt-image-1'); ?>>GPT-Image-1 (OpenAI-需進行身分驗證)</option>
+				<option value="dall-e-3" <?php selected($qavatar_model, 'dall-e-3'); ?>>DALL-E 3 (OpenAI)</option>
+			</select>
+			<p class="description">選擇用於生成Q版人像的AI模型</p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * 渲染設置頁面
 	 */
 	public function render_settings_page() {
@@ -385,27 +502,74 @@ class ApiSettings {
 					<li>前台用戶可以填寫生辰八字信息進行分析</li>
 				</ol>
 				
+				<h2>功能說明</h2>
+				<div style="margin-bottom: 20px;">
+					<h3>基本命格分析</h3>
+					<p>根據用戶的生辰八字信息，提供以下分析結果：</p>
+					<ul>
+						<li>完整的八字盤（年柱、月柱、日柱、時柱）</li>
+						<li>五行分析（金、木、水、火、土的分佈）</li>
+						<li>日主分析及強弱判斷</li>
+						<li>缺失五行和偏弱五行分析</li>
+						<li>性格特點分析</li>
+						<li>五行補充建議</li>
+					</ul>
+				</div>
+				
+				<div style="margin-bottom: 20px;">
+					<h3>命格Q版人像功能</h3>
+					<p>此功能可以根據用戶的八字命格特點，生成對應的Q版人像：</p>
+					<ul>
+						<li><strong>啟用方式</strong>：在「API設定」頁面的「命格Q版形象設置」區塊中啟用</li>
+						<li><strong>API要求</strong>：需要使用OpenAI的圖像生成API，可使用GPT-Image-1或DALL-E 3模型</li>
+						<li><strong>生成過程</strong>：用戶提交分析後，會先顯示分析結果，同時在後台非同步生成Q版人像</li>
+						<li><strong>呈現方式</strong>：Q版人像生成完成後會自動顯示在分析結果頁面的頂部</li>
+						<li><strong>形象特點</strong>：根據用戶的性別、年齡、日主特點和八字分析結果來定制人物形象</li>
+					</ul>
+					<p><em>注意：啟用此功能需要額外的API使用費用，請確保您的OpenAI賬戶有足夠的額度。</em></p>
+				</div>
+				
+				<div style="margin-bottom: 20px;">
+					<h3>商品推薦功能</h3>
+					<p>根據命格分析中的缺失或偏弱五行，自動推薦相關商品：</p>
+					<ul>
+						<li>系統會根據用戶缺失或偏弱的五行屬性，從WooCommerce商品中篩選對應的商品</li>
+						<li>商品需要按五行進行歸類（金、木、水、火、土）才能被正確推薦</li>
+						<li>在分析結果頁面底部顯示推薦商品列表</li>
+					</ul>
+				</div>
+				
 				<h2>支持的API供應商</h2>
 				<p>目前支持以下API供應商：</p>
 				<ul>
-					<li><strong>DeepSeek</strong> - 默認API供應商</li>
+					<li><strong>DeepSeek</strong> - 默認API供應商，用於八字分析</li>
+					<li><strong>OpenAI</strong> - 可用於八字分析和Q版人像生成</li>
 					<li><strong>其他兼容OpenAI接口的供應商</strong> - 可以通過修改API地址使用</li>
 				</ul>
 				
 				<h2>常見問題</h2>
 				<div style="margin-bottom: 15px;">
 					<p><strong>問：API密鑰在哪裡獲取？</strong></p>
-					<p>答：您需要在相應的API供應商（如DeepSeek）網站上註冊賬戶，然後在個人設置中獲取API密鑰。</p>
+					<p>答：您需要在相應的API供應商（如DeepSeek或OpenAI）網站上註冊賬戶，然後在個人設置中獲取API密鑰。</p>
 				</div>
 				<div style="margin-bottom: 15px;">
 					<p><strong>問：為什麼分析結果未顯示？</strong></p>
 					<p>答：請檢查API密鑰是否正確，以及API供應商服務是否正常運行。您還可以查看瀏覽器控制台日誌獲取更多信息。</p>
+				</div>
+				<div style="margin-bottom: 15px;">
+					<p><strong>問：Q版人像生成需要多長時間？</strong></p>
+					<p>答：根據API服務器負載和圖像複雜度，通常需要5-30秒不等。生成過程在後台進行，用戶可以先查看分析結果。</p>
+				</div>
+				<div style="margin-bottom: 15px;">
+					<p><strong>問：如何設置商品的五行屬性？</strong></p>
+					<p>答：在WooCommerce商品分類中創建"金"、"木"、"水"、"火"、"土"五個分類，然後將商品歸入相應分類即可。</p>
 				</div>
 				
 				<h2>更多資源</h2>
 				<p>如需更多幫助，請訪問以下資源：</p>
 				<ul>
 					<li><a href="https://deepseek.com" target="_blank">DeepSeek官方網站</a></li>
+					<li><a href="https://openai.com" target="_blank">OpenAI官方網站</a></li>
 					<li><a href="https://github.com/s0985514623/wp-ai-bazi-analysis" target="_blank">插件GitHub倉庫</a></li>
 				</ul>
 			</div>
@@ -420,12 +584,15 @@ class ApiSettings {
 	 */
 	public static function get_api_settings() {
 		$default_settings = [
-			'api_key'      => 'sk-996a8b520bbb40a191eb9e30e632e22b',
-			'api_url'      => 'https://api.deepseek.com/chat/completions',
-			'api_provider' => 'deepseek',
-			'api_model'    => 'deepseek-chat',
-			'temperature'  => 0.7,
-			'max_tokens'   => 2000,
+			'api_key'         => 'sk-996a8b520bbb40a191eb9e30e632e22b',
+			'api_url'         => 'https://api.deepseek.com/chat/completions',
+			'api_provider'    => 'deepseek',
+			'api_model'       => 'deepseek-chat',
+			'temperature'     => 0.7,
+			'max_tokens'      => 2000,
+			'enable_qavatar'  => 'no',
+			'qavatar_api_key' => '',
+			'qavatar_model'   => 'gpt-image-1',
 		];
 
 		$options = get_option(self::OPTION_NAME, []);

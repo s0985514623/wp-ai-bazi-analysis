@@ -92,9 +92,9 @@ const BaziResult: React.FC<BaziResultProps> = ({ resultData, onBack }) => {
     // 立即檢查一次
     checkAvatarStatus();
     
-    // 設置每10秒輪詢一次
+    // 設置每5秒輪詢一次
     if (qavatarStatus === 'generating' && qavatarRequestId) {
-      intervalId = setInterval(checkAvatarStatus, 10000);
+      intervalId = setInterval(checkAvatarStatus, 5000);
     }
     
     // 清理函數
@@ -110,26 +110,28 @@ const BaziResult: React.FC<BaziResultProps> = ({ resultData, onBack }) => {
       <div className="result-header">
         <h2>命格分析結果</h2>
         <div className="user-info-container">
-          {/* 左側: Q版人像 */}
-          <div className="qavatar-section">
-            <h3>命格Q版形象</h3>
-            <div className="qavatar-container">
-              {qavatar.status === 'completed' && qavatar.url ? (
-                <img src={qavatar.url} alt="命格Q版形象" className="qavatar-image" />
-              ) : qavatar.status === 'generating' || qavatar.status === 'pending' || qavatar.status === 'processing' ? (
-                <div className="qavatar-loading">
-                  <div className="qavatar-loading-animation"></div>
-                  <p>正在根據您的八字命格生成Q版人像，請稍候...</p>
-                </div>
-              ) : (
-                <div className="qavatar-unavailable">
-                  <p>暫無命格Q版形象</p>
-                </div>
-              )}
+          {/* 左側: Q版人像 - 只在啟用時顯示 */}
+          {qavatar.status !== 'disabled' && (
+            <div className="qavatar-section">
+              <h3>命格Q版形象</h3>
+              <div className="qavatar-container">
+                {qavatar.status === 'completed' && qavatar.url ? (
+                  <img src={qavatar.url} alt="命格Q版形象" className="qavatar-image" />
+                ) : qavatar.status === 'generating' || qavatar.status === 'pending' || qavatar.status === 'processing' ? (
+                  <div className="qavatar-loading">
+                    <div className="qavatar-loading-animation"></div>
+                    <p>正在根據您的八字命格生成Q版人像，請稍候...</p>
+                  </div>
+                ) : (
+                  <div className="qavatar-unavailable">
+                    <p>暫無命格Q版形象</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
           {/* 右側: 用戶信息 */}
-          <div className="user-info">
+          <div className={`user-info ${qavatar.status === 'disabled' ? 'user-info-full-width' : ''}`}>
             <p><span>性別：</span><span id="result-gender">{userInfo.gender}</span></p>
             <p><span>生辰：</span><span id="result-birth">{userInfo.birthDate}</span></p>
             <p><span>出生地：</span><span id="result-birthplace">{userInfo.birthPlace}</span></p>

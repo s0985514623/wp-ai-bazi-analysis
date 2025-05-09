@@ -424,6 +424,13 @@ input, select {
   box-shadow: var(--card-shadow);
 }
 
+/* 當Q版人像未啟用時讓用戶信息占滿寬度 */
+.user-info-full-width {
+  flex: 1;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
 /* 頂部Q版圖像區域 - 調整樣式 */
 .result-header .qavatar-section {
   flex: 1.2;

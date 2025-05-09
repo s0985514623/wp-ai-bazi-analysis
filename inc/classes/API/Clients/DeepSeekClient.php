@@ -163,6 +163,26 @@ class DeepSeekClient extends BaseClient {
 		$result['apiProvider'] = 'deepseek';
 		$result['apiModel']    = $this->api_settings['api_model'];
 
+		// 獲取圖像服務，用於判斷是否啟用Q版人像功能
+		$imageService = \R2\WpBaziPlugin\API\Clients\ClientFactory::getImageService();
+
+		// 檢查是否啟用Q版人像功能
+		if ($imageService !== null) {
+			// 已啟用Q版人像功能
+			// 先標記圖像生成狀態為"生成中"
+			$result['qavatarStatus'] = 'generating';
+			$result['qavatarUrl']    = '';
+
+			// 啟動非阻塞的圖像生成過程
+			$request_id                 = $this->triggerAvatarGeneration($bazi_data, $data);
+			$result['qavatarRequestId'] = $request_id;
+		} else {
+			// 未啟用Q版人像功能
+			$result['qavatarStatus']    = 'disabled';
+			$result['qavatarUrl']       = '';
+			$result['qavatarRequestId'] = '';
+		}
+
 		return [
 			'success' => true,
 			'data'    => $result,

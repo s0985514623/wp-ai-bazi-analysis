@@ -263,4 +263,35 @@ abstract class BaseClient {
 
 		return $chinese_hours[ intval($hour) ];
 	}
+
+	/**
+	 * 觸發非阻塞的圖像生成過程
+	 * 使用WordPress的wp_schedule_single_event來非阻塞處理
+	 *
+	 * @param array $baziData 八字分析結果
+	 * @param array $userData 用戶基本信息
+	 * @return string 生成的請求ID
+	 */
+	public function triggerAvatarGeneration( array $baziData, array $userData ) {
+		// 生成唯一請求ID
+		$request_id = md5(json_encode($userData) . time());
+
+		// 將分析結果和請求ID存儲到臨時選項中
+		update_option(
+			'wp_bazi_avatar_request_' . $request_id,
+			[
+				'bazi_data'  => $baziData,
+				'user_data'  => $userData,
+				'status'     => 'pending',
+				'created_at' => time(),
+			]
+		);
+
+		// 使用WordPress計劃任務API立即處理（非阻塞）
+		// 鉤子的註冊已在AiChat類的register_hooks方法中集中處理
+		wp_schedule_single_event(time(), 'wp_bazi_generate_avatar', [ $request_id ]);
+
+		// 返回請求ID供前端使用
+		return $request_id;
+	}
 }

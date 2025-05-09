@@ -25,12 +25,15 @@ class AiChat {
 	 * 注冊鉤子和回調
 	 */
 	public function register_hooks() {
-		// 注冊頭像生成鉤子，如果提供者是OpenAI
+		// 注冊頭像生成鉤子，如果啟用了Q版人像功能
 		$api_settings = ApiSettings::get_api_settings();
-		if ($api_settings['api_provider'] === 'openai') {
-			// 確保客戶端已實例化並注冊鉤子
-			$client = ClientFactory::createClient();
-			\add_action('wp_bazi_generate_avatar', [ $client, 'processAvatarGeneration' ], 10, 1);
+		if ($api_settings['enable_qavatar'] === 'yes') {
+			// 獲取圖像生成服務實例
+			$imageService = ClientFactory::getImageService();
+			// 確保圖像生成服務存在才注冊鉤子
+			if ($imageService) {
+				\add_action('wp_bazi_generate_avatar', [ $imageService, 'processAvatarGeneration' ], 10, 1);
+			}
 		}
 	}
 
