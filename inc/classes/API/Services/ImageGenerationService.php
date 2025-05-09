@@ -74,20 +74,54 @@ class ImageGenerationService {
 
 			// 處理響應
 			if (isset($response->data[0]->url) && !empty($response->data[0]->url)) {
-				return [
-					'success'   => true,
-					'image_url' => $response->data[0]->url,
-					'data'      => $response->toArray(),
-				];
+				// 將圖片保存到WordPress媒體庫
+				$media_id = $this->save_image_to_media_library($response->data[0]->url, 'qavatar');
+
+				if ($media_id) {
+					// 成功保存到媒體庫
+					$media_url = wp_get_attachment_url($media_id);
+					return [
+						'success'      => true,
+						'image_url'    => $media_url,
+						'media_id'     => $media_id,
+						'original_url' => $response->data[0]->url,
+						'data'         => $response->toArray(),
+					];
+				} else {
+					// 保存失敗，返回原始URL
+					return [
+						'success'     => true,
+						'image_url'   => $response->data[0]->url,
+						'data'        => $response->toArray(),
+						'media_error' => '無法將圖片保存到媒體庫',
+					];
+				}
 			} elseif (isset($response->data[0]->b64_json)) {
 				// 處理base64圖像數據
-				$b64_data  = $response->data[0]->b64_json;
-				$image_url = 'data:image/png;base64,' . $b64_data;
-				return [
-					'success'   => true,
-					'image_url' => $image_url,
-					'data'      => $response->toArray(),
-				];
+				$b64_data = $response->data[0]->b64_json;
+
+				// 將base64圖像保存到媒體庫
+				$media_id = $this->save_base64_to_media_library($b64_data, 'qavatar-b64');
+
+				if ($media_id) {
+					// 成功保存到媒體庫
+					$media_url = wp_get_attachment_url($media_id);
+					return [
+						'success'   => true,
+						'image_url' => $media_url,
+						'media_id'  => $media_id,
+						'data'      => $response->toArray(),
+					];
+				} else {
+					// 保存失敗，返回原始base64
+					$image_url = 'data:image/png;base64,' . $b64_data;
+					return [
+						'success'     => true,
+						'image_url'   => $image_url,
+						'data'        => $response->toArray(),
+						'media_error' => '無法將base64圖片保存到媒體庫',
+					];
+				}
 			} else {
 				return [
 					'success' => false,
@@ -102,6 +136,130 @@ class ImageGenerationService {
 				'error'   => $e->getMessage(),
 				'code'    => $e->getCode(),
 			];
+		}
+	}
+
+	/**
+	 * 從URL下載並保存圖片到WordPress媒體庫
+	 *
+	 * @param string $image_url 圖片URL
+	 * @param string $title 圖片標題前綴
+	 * @return int|false 成功返回媒體ID，失敗返回false
+	 */
+	private function save_image_to_media_library( $image_url, $title = 'qavatar' ) {
+		// 確保WordPress文件系統可用
+		if (!function_exists('wp_upload_bits') || !function_exists('wp_handle_sideload')) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		if (!function_exists('wp_generate_attachment_metadata')) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+		}
+		if (!function_exists('wp_insert_attachment')) {
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+		}
+
+		try {
+			// 下載圖片
+			$response = wp_remote_get($image_url);
+
+			if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+				return false;
+			}
+
+			$image_data = wp_remote_retrieve_body($response);
+
+			// 創建臨時文件
+			$filename = $title . '-' . time() . '.png';
+			$upload   = wp_upload_bits($filename, null, $image_data);
+
+			if ($upload['error']) {
+				return false;
+			}
+
+			// 準備文件信息
+			$file_path = $upload['file'];
+			$file_type = wp_check_filetype($filename, null);
+
+			$attachment = [
+				'post_mime_type' => $file_type['type'],
+				'post_title'     => sanitize_file_name($title . '-' . date('YmdHis')),
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			];
+
+			// 插入附件
+			$attach_id = wp_insert_attachment($attachment, $file_path);
+
+			if (is_wp_error($attach_id)) {
+				return false;
+			}
+
+			// 生成附件元數據
+			$attach_data = wp_generate_attachment_metadata($attach_id, $file_path);
+			wp_update_attachment_metadata($attach_id, $attach_data);
+
+			return $attach_id;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * 將base64圖像數據保存到WordPress媒體庫
+	 *
+	 * @param string $base64_data Base64編碼的圖像數據
+	 * @param string $title 圖片標題前綴
+	 * @return int|false 成功返回媒體ID，失敗返回false
+	 */
+	private function save_base64_to_media_library( $base64_data, $title = 'qavatar' ) {
+		// 確保WordPress文件系統可用
+		if (!function_exists('wp_upload_bits') || !function_exists('wp_handle_sideload')) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		if (!function_exists('wp_generate_attachment_metadata')) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+		}
+		if (!function_exists('wp_insert_attachment')) {
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+		}
+
+		try {
+			// 解碼base64數據
+			$decoded_data = base64_decode($base64_data);
+
+			// 創建臨時文件
+			$filename = $title . '-' . time() . '.png';
+			$upload   = wp_upload_bits($filename, null, $decoded_data);
+
+			if ($upload['error']) {
+				return false;
+			}
+
+			// 準備文件信息
+			$file_path = $upload['file'];
+			$file_type = wp_check_filetype($filename, null);
+
+			$attachment = [
+				'post_mime_type' => $file_type['type'],
+				'post_title'     => sanitize_file_name($title . '-' . date('YmdHis')),
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			];
+
+			// 插入附件
+			$attach_id = wp_insert_attachment($attachment, $file_path);
+
+			if (is_wp_error($attach_id)) {
+				return false;
+			}
+
+			// 生成附件元數據
+			$attach_data = wp_generate_attachment_metadata($attach_id, $file_path);
+			wp_update_attachment_metadata($attach_id, $attach_data);
+
+			return $attach_id;
+		} catch (\Exception $e) {
+			return false;
 		}
 	}
 
@@ -170,7 +328,7 @@ class ImageGenerationService {
 
 		// 處理結果
 		if ($image_response['success']) {
-			// 獲取圖片URL
+			// 獲取圖片URL - 現在應該是已保存到媒體庫的URL
 			$image_url = $image_response['image_url'];
 
 			// 創建自定義事件結果
@@ -179,10 +337,21 @@ class ImageGenerationService {
 				'image_url'  => $image_url,
 			];
 
+			// 若有媒體ID，也保存
+			if (isset($image_response['media_id'])) {
+				$result['media_id'] = $image_response['media_id'];
+			}
+
 			// 更新請求狀態
 			$request_data['status']       = 'completed';
 			$request_data['image_url']    = $image_url;
 			$request_data['completed_at'] = time();
+
+			// 保存媒體庫ID (如果有)
+			if (isset($image_response['media_id'])) {
+				$request_data['media_id'] = $image_response['media_id'];
+			}
+
 			update_option('wp_bazi_avatar_request_' . $request_id, $request_data);
 
 			// 在WordPress數據庫中存儲結果，前端可以通過AJAX輪詢獲取
